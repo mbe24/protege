@@ -1,4 +1,4 @@
-protege
+protege [![Build Status](https://travis-ci.org/mbe24/protege.svg?branch=master)](https://travis-ci.org/mbe24/protege)
 =======
 
 /pʁɔ.te.ʒe/ - binary protocol handling library for java
