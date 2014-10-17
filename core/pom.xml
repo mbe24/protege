@@ -5,12 +5,13 @@
 		<groupId>org.beyene.protege</groupId>
 		<artifactId>build</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../build</relativePath>
 	</parent>
 	<artifactId>core</artifactId>
 
 	<name>${project.groupId}.${project.artifactId}</name>
 	<description>Core functions for XML based protocol definition</description>
+	<!--
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -19,4 +20,5 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	-->
 </project>
