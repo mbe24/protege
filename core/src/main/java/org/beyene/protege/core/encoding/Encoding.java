@@ -14,22 +14,13 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.core;
+package org.beyene.protege.core.encoding;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import org.beyene.protege.data.Primitive;
 
-@XmlType(name = "value")
-public class Value {
-
-	private String hex;
-
-	@XmlAttribute(name = "hex")
-	public String getHex() {
-		return hex;
-	}
-
-	public void setHex(String hex) {
-		this.hex = hex;
-	}
+public interface Encoding<T> {
+	
+	public String getKey();
+	
+	public Primitive<T> getPrimitive();
 }
