@@ -38,7 +38,7 @@ public class StringProcessorTest {
 	@Test
 	public void testToBytes() throws Exception {
 		String element = "loremipsum";
-		byte[] bytes = ap.toBytes(element, StringEncoding.UTF_8, 0);
+		byte[] bytes = ap.toBytes(element, StringEncoding.UTF_8, element.length() * StringEncoding.UTF_8.getWidth());
 		
 		Assert.assertEquals((StringEncoding.UTF_8.getWidth() / 8) * element.length(), bytes.length);
 		
