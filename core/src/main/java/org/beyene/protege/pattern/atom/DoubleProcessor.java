@@ -21,8 +21,8 @@ import org.beyene.protege.data.Primitive;
 
 public class DoubleProcessor extends AbstractAtomProcessor<Double> {
 
-	public DoubleProcessor(int length) {
-		super(length, Primitive.DOUBLE);
+	public DoubleProcessor() {
+		super(Primitive.DOUBLE);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class DoubleProcessor extends AbstractAtomProcessor<Double> {
 	}
 
 	@Override
-	public byte[] toBytes(Double element, Encoding<Double> encoding) {
+	public byte[] toBytes(Double element, Encoding<Double> encoding, int bits) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -21,17 +21,10 @@ import org.beyene.protege.data.Primitive;
 
 abstract class AbstractAtomProcessor<T> implements AtomProcessor<T> {
 
-	protected final int length;
 	protected final Primitive<T> primitive;
 	
-	public AbstractAtomProcessor(int length, Primitive<T> primitive) {
-		this.length = length;
+	public AbstractAtomProcessor(Primitive<T> primitive) {
 		this.primitive = primitive;
-	}
-
-	@Override
-	public int getLength() {
-		return length;
 	}
 	
 	@Override
@@ -43,5 +36,5 @@ abstract class AbstractAtomProcessor<T> implements AtomProcessor<T> {
 	public abstract T interpret(byte[] bytes, Encoding<T> encoding);
 
 	@Override
-	public abstract byte[] toBytes(T element, Encoding<T> encoding);
+	public abstract byte[] toBytes(T element, Encoding<T> encoding, int bits);
 }

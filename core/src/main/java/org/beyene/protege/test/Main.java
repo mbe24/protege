@@ -26,7 +26,7 @@ public class Main {
 
 	public static void main(String[] args) throws JAXBException {
 		Protocol p = Units.getProtocol();
-		
+
 		JAXBContext context = JAXBContext.newInstance(Protocol.class);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");

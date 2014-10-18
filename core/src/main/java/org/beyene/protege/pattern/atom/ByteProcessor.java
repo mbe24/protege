@@ -21,8 +21,8 @@ import org.beyene.protege.data.Primitive;
 
 public class ByteProcessor extends AbstractAtomProcessor<Byte[]> {
 
-	public ByteProcessor(int length) {
-		super(length, Primitive.BYTES);
+	public ByteProcessor() {
+		super(Primitive.BYTES);
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class ByteProcessor extends AbstractAtomProcessor<Byte[]> {
 	}
 
 	@Override
-	public byte[] toBytes(Byte[] element, Encoding<Byte[]> encoding) {
+	public byte[] toBytes(Byte[] element, Encoding<Byte[]> encoding, int bits) {
 		return unbox(element);
 	}
 

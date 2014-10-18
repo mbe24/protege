@@ -23,8 +23,8 @@ import org.beyene.protege.data.Primitive;
 
 public class StringProcessor extends AbstractAtomProcessor<String> {
 
-	public StringProcessor(int length) {
-		super(length, Primitive.STRING);
+	public StringProcessor() {
+		super(Primitive.STRING);
 	}
 
 	@Override
@@ -34,8 +34,14 @@ public class StringProcessor extends AbstractAtomProcessor<String> {
 	}
 
 	@Override
-	public byte[] toBytes(String element, Encoding<String> encoding) {
+	public byte[] toBytes(String element, Encoding<String> encoding, int bits) {
 		Charset charset = Charset.forName(encoding.getKey());
-		return element.getBytes(charset);
+		byte[] bytes = element.getBytes(charset);
+
+		assert (bytes.length * 8 == bits) : String
+				.format("Error! Length mismatch while encoding '%s'. %d bits expected, but got %d bits instead.",
+						element, bits, (bytes.length * 8));
+
+		return bytes;
 	}
 }

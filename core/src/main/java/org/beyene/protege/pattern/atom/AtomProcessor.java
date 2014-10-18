@@ -21,12 +21,10 @@ import org.beyene.protege.data.Primitive;
 
 
 public interface AtomProcessor<T> {
-
-	public int getLength();
 	
 	public Primitive<T> getPrimitive();
 	
 	public T interpret(byte[] bytes, Encoding<T> encoding);
 	
-	public byte[] toBytes(T element, Encoding<T> encoding);
+	public byte[] toBytes(T element, Encoding<T> encoding, int bits);
 }

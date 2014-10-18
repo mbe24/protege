@@ -37,7 +37,7 @@ public class InputParser implements Closeable {
 	private final List<Unit> units;
 
 	private CountDownLatch ready;
-	
+
 	private InputParser(InputStream is, Protocol p) {
 		this.protocol = p.getName();
 
@@ -45,7 +45,7 @@ public class InputParser implements Closeable {
 
 		this.header = p.getHeader();
 		this.units = p.getUnits();
-		
+
 		this.ready = new CountDownLatch(1);
 	}
 
@@ -60,13 +60,13 @@ public class InputParser implements Closeable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		DataUnit result = null;
 		this.ready = new CountDownLatch(1);
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public void close() throws IOException {
 		is.close();

@@ -22,5 +22,7 @@ public interface Encoding<T> {
 	
 	public String getKey();
 	
+	public int getWidth();
+	
 	public Primitive<T> getPrimitive();
 }

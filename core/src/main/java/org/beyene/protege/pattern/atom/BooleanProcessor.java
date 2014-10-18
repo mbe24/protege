@@ -22,9 +22,8 @@ import org.beyene.protege.data.Primitive;
 public class BooleanProcessor extends AbstractAtomProcessor<Boolean> {
 
 	// mapping needed for conversion
-	
-	public BooleanProcessor(int length) {
-		super(length, Primitive.BOOLEAN);
+	public BooleanProcessor() {
+		super(Primitive.BOOLEAN);
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class BooleanProcessor extends AbstractAtomProcessor<Boolean> {
 	}
 
 	@Override
-	public byte[] toBytes(Boolean element, Encoding<Boolean> encoding) {
+	public byte[] toBytes(Boolean element, Encoding<Boolean> encoding, int bits) {
 		// TODO Auto-generated method stub
 		return null;
 	}

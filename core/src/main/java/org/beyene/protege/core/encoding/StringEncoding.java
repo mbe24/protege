@@ -25,18 +25,20 @@ import org.beyene.protege.data.Primitive;
 public enum StringEncoding implements Encoding<String> {
 
 	@XmlEnumValue("utf-8")
-	UTF_8("UTF-8"),
+	UTF_8("UTF-8", 8),
 
 	@XmlEnumValue("utf-16le")
-	UTF_16LE("UTF-16LE"),
+	UTF_16LE("UTF-16LE", 16),
 
 	@XmlEnumValue("utf-16be")
-	UTF_16BE("UTF-16BE");
+	UTF_16BE("UTF-16BE", 16);
 
 	private final String charset;
+	private final int bits;
 
-	StringEncoding(String charset) {
+	private StringEncoding(String charset, int bits) {
 		this.charset = charset;
+		this.bits = bits;
 	}
 
 	@Override
@@ -47,5 +49,10 @@ public enum StringEncoding implements Encoding<String> {
 	@Override
 	public Primitive<String> getPrimitive() {
 		return Primitive.STRING;
+	}
+
+	@Override
+	public int getWidth() {
+		return bits;
 	}
 }

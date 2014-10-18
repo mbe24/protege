@@ -21,8 +21,8 @@ import org.beyene.protege.data.Primitive;
 
 public class FloatProcessor extends AbstractAtomProcessor<Float> {
 
-	public FloatProcessor(int length) {
-		super(length, Primitive.FLOAT);
+	public FloatProcessor() {
+		super(Primitive.FLOAT);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class FloatProcessor extends AbstractAtomProcessor<Float> {
 	}
 
 	@Override
-	public byte[] toBytes(Float element, Encoding<Float> encoding) {
+	public byte[] toBytes(Float element, Encoding<Float> encoding, int bits) {
 		// TODO Auto-generated method stub
 		return null;
 	}
