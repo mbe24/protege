@@ -22,6 +22,10 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	
+	<modules>
+		<module>../core</module>
+	</modules>
 
 	<build>
 		<plugins>
