@@ -25,6 +25,9 @@ import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.Type;
 import org.beyene.protege.core.Unit;
 import org.beyene.protege.core.Value;
+import org.beyene.protege.core.encoding.DoubleEncoding;
+import org.beyene.protege.core.header.TotalLength;
+import org.beyene.protege.core.header.UniqueKey;
 
 public class Units {
 
@@ -46,9 +49,17 @@ public class Units {
 		lastName.setId("last-name");
 		lastName.setType(Type.STRING);
 		lastName.setLength(l);
+		
+		Length genderLength = new Length();
+		genderLength.setBit(8);
+		
+		Element gender = new Element();
+		gender.setId("gender");
+		gender.setType(Type.STRING);
+		gender.setLength(genderLength);		
 
 		ComplexType personType = new ComplexType();
-		personType.setElements(Arrays.asList(firstName, lastName));
+		personType.setElements(Arrays.asList(firstName, lastName, gender));
 		personType.setName("person");
 
 		Unit unit = new Unit();
@@ -79,14 +90,105 @@ public class Units {
 		packetHeader.setType(Type.BYTE);
 		packetHeader.setValue(value);
 
+		Element version = new Element();
+		version.setType(Type.INTEGER);
+		Length versionLength = new Length();
+		versionLength.setBit(8);
+		version.setLength(versionLength);
+		version.setId("version");
+		
+		Element totalLength = new Element();
+		totalLength.setType(Type.INTEGER);
+		totalLength.setLength(versionLength);
+		totalLength.setId("total-length");
+		
+		Element unitId = new Element();
+		unitId.setLength(versionLength);
+		unitId.setType(Type.BYTE);
+		unitId.setId("unit-id");
+		
 		ComplexType header = new ComplexType();
-		header.setElements(Arrays.asList(packetHeader));
+		header.setElements(Arrays.asList(packetHeader, version, totalLength, unitId));
 
 		Protocol p = new Protocol();
-		p.setName("simple");
+		p.setName("hello");
 		p.setHeader(header);
-		p.setUnits(Arrays.asList(getExample()));
+		
+		// create type 'person'
+		Length l = new Length();
+		l.setPrecedingLengthFieldSize(8);
 
+		Element firstName = new Element();
+		firstName.setId("first-name");
+		firstName.setType(Type.STRING);
+		firstName.setLength(l);
+
+		Element lastName = new Element();
+		lastName.setId("last-name");
+		lastName.setType(Type.STRING);
+		lastName.setLength(l);
+		
+		Length genderLength = new Length();
+		genderLength.setBit(8);
+		
+		Element gender = new Element();
+		gender.setId("gender");
+		gender.setType(Type.STRING);
+		gender.setLength(genderLength);		
+
+		ComplexType personType = new ComplexType();
+		personType.setElements(Arrays.asList(firstName, lastName, gender));
+		personType.setName("person");
+
+		// create unit request
+		
+		Unit request = new Unit();
+		request.setName("hello-request");
+		
+		ComplexType requestBody = new ComplexType();
+		Element requestElement = new Element();
+		requestElement.setClassification(personType.getName());
+		Length requestLength = new Length();
+		requestElement.setLength(requestLength);
+		requestBody.setElements(Arrays.asList(requestElement));
+		request.setBody(requestBody);
+		
+		// create unit response
+		
+		Unit response = new Unit();
+		response.setName("hello-response");
+
+		// create body
+		Length m = new Length();
+		m.setPrecedingLengthFieldSize(8);
+
+		Element personList = new Element();
+		personList.setClassification(personType.getName());
+		personList.setLength(m);
+
+		Element averageAge = new Element();
+		averageAge.setType(Type.DOUBLE);
+		averageAge.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
+		Length age = new Length();
+		averageAge.setLength(age);
+		averageAge.setId("average-age");
+		
+		ComplexType body = new ComplexType();
+		body.setElements(Arrays.asList(personList, averageAge));
+		response.setBody(body);
+
+		p.setComplexTypes(Arrays.asList(personType));
+		p.setUnits(Arrays.asList(request, response));
+		
+		// properties
+		
+		UniqueKey key = new UniqueKey();
+		key.setElementId(unitId.getId());
+		p.setUniqueKey(key);
+		
+		TotalLength tl = new TotalLength();
+		tl.setElementId(totalLength.getId());
+		p.setTotalLength(tl);
 		return p;
 	}
 }

@@ -34,11 +34,9 @@ public enum Type {
 	@XmlEnumValue("integer")
 	INTEGER,
 	
-	//IEEE 754 - single (32bit)
 	@XmlEnumValue("float")
 	FLOAT,
 	
-	//IEEE 754 - double (64bit)
 	@XmlEnumValue("double")
 	DOUBLE;
 }

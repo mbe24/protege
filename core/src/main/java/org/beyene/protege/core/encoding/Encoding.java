@@ -20,6 +20,7 @@ import org.beyene.protege.data.Primitive;
 
 public interface Encoding<T> {
 	
+	// TODO put method in new non generic interface classification
 	public String getKey();
 	
 	public int getWidth();

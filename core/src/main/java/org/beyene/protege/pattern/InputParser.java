@@ -19,32 +19,34 @@ package org.beyene.protege.pattern;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.beyene.protege.core.ComplexType;
 import org.beyene.protege.core.Protocol;
-import org.beyene.protege.core.Unit;
 import org.beyene.protege.data.DataUnit;
 
 public class InputParser implements Closeable {
 
-	private final String protocol;
-
 	private final InputStream is;
+	private final SocketListener delegate;
 
-	private final ComplexType header;
-	private final List<Unit> units;
+	private final ExecutorService executor;
+	private final Future<Void> result;
+	private final ConcurrentLinkedQueue<DataUnit> queue = new ConcurrentLinkedQueue<>();
 
 	private CountDownLatch ready;
+	private final AtomicBoolean hasException = new AtomicBoolean();
 
 	private InputParser(InputStream is, Protocol p) {
-		this.protocol = p.getName();
-
 		this.is = is;
 
-		this.header = p.getHeader();
-		this.units = p.getUnits();
+		this.delegate = new SocketListener(this, is, p);
+		this.executor = Executors.newFixedThreadPool(1);
+		this.result = executor.submit(delegate);
 
 		this.ready = new CountDownLatch(1);
 	}
@@ -53,22 +55,45 @@ public class InputParser implements Closeable {
 		return new InputParser(is, p);
 	}
 
-	public DataUnit read() {
+	public DataUnit read() throws IOException {
 		try {
 			ready.await();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		DataUnit result = null;
-		this.ready = new CountDownLatch(1);
+		if (hasException.get())
+			rethrowException();
 
-		return result;
+		this.ready = new CountDownLatch(1);
+		return queue.poll();
 	}
 
 	@Override
 	public void close() throws IOException {
+		if (!result.isDone() && !result.isCancelled())
+			result.cancel(true);
+
 		is.close();
+		executor.shutdown();
+	}
+
+	private void rethrowException() throws IOException {
+		rethrow(delegate.getIOException());
+	}
+
+	private <T extends Exception> void rethrow(T exception) throws T {
+		if (exception != null)
+			throw exception;
+	}
+
+	void setException() {
+		this.hasException.set(true);
+		ready.countDown();
+	}
+
+	void supply(DataUnit data) {
+		ready.countDown();
+		queue.add(data);
 	}
 }
