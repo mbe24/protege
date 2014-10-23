@@ -14,16 +14,16 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.core.encoding;
+package org.beyene.protege.processor.pattern.atom;
 
 import org.beyene.protege.core.data.Primitive;
+import org.beyene.protege.core.encoding.Encoding;
 
-public interface Encoding<T> {
-
-	// TODO put method in new non generic interface classification
-	public String getKey();
-
-	public int getWidth();
+public interface AtomProcessor<T> {
 
 	public Primitive<T> getPrimitive();
+
+	public T interpret(byte[] bytes, Encoding<T> encoding);
+
+	public byte[] toBytes(T element, Encoding<T> encoding, int bits);
 }

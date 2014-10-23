@@ -19,7 +19,7 @@ package org.beyene.protege.core.encoding;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.beyene.protege.data.Primitive;
+import org.beyene.protege.core.data.Primitive;
 
 public final class Classifications {
 
@@ -39,14 +39,14 @@ public final class Classifications {
 
 		for (StringEncoding enc : StringEncoding.values())
 			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
-		
+
 		for (FloatEncoding enc : FloatEncoding.values())
 			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
-		
+
 		for (DoubleEncoding enc : DoubleEncoding.values())
 			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
 	}
-	
+
 	public static <T> Encoding<T> get(String key, Primitive<T> type) {
 		Map<String, Encoding<?>> inner = map.get(type);
 		@SuppressWarnings("unchecked")

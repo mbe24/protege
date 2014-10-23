@@ -19,7 +19,7 @@ package org.beyene.protege.core.encoding;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
-import org.beyene.protege.data.Primitive;
+import org.beyene.protege.core.data.Primitive;
 
 @XmlType(name = "string-encoding")
 public enum StringEncoding implements Encoding<String> {

@@ -19,17 +19,17 @@ package org.beyene.protege.core.encoding;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlType;
 
-import org.beyene.protege.data.Primitive;
+import org.beyene.protege.core.data.Primitive;
 
 @XmlType(name = "double-encoding")
 public enum DoubleEncoding implements Encoding<Double> {
-	
+
 	@XmlEnumValue("ieee754-double")
 	IEEE_754_DOUBLE("ieee754-double", 64);
 
 	private final String key;
 	private final int bits;
-	
+
 	private DoubleEncoding(String key, int bits) {
 		this.key = key;
 		this.bits = bits;

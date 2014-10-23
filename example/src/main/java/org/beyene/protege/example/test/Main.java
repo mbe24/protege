@@ -14,16 +14,23 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.core.encoding;
+package org.beyene.protege.example.test;
 
-import org.beyene.protege.core.data.Primitive;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
-public interface Encoding<T> {
+import org.beyene.protege.core.Protocol;
 
-	// TODO put method in new non generic interface classification
-	public String getKey();
+public class Main {
 
-	public int getWidth();
+	public static void main(String[] args) throws JAXBException {
+		Protocol p = Units.getProtocol();
 
-	public Primitive<T> getPrimitive();
+		JAXBContext context = JAXBContext.newInstance(Protocol.class);
+		Marshaller marshaller = context.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+		marshaller.marshal(p, System.out);
+	}
 }

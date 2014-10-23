@@ -14,39 +14,24 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.core.encoding;
+package org.beyene.protege.core.header;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.beyene.protege.core.data.Primitive;
+import org.beyene.protege.core.Value;
 
-@XmlType(name = "float-encoding")
-public enum FloatEncoding implements Encoding<Float> {
+@XmlType(name = "unique-key-value")
+public class UniqueKeyValue {
 
-	@XmlEnumValue("ieee754-single")
-	IEEE_754_SINGLE("ieee754-single", 32);
+	private Value value;
 
-	private final String key;
-	private final int bits;
-
-	private FloatEncoding(String key, int bits) {
-		this.key = key;
-		this.bits = bits;
+	@XmlElement(name = "value")
+	public Value getValue() {
+		return value;
 	}
 
-	@Override
-	public String getKey() {
-		return key;
-	}
-
-	@Override
-	public int getWidth() {
-		return bits;
-	}
-
-	@Override
-	public Primitive<Float> getPrimitive() {
-		return Primitive.FLOAT;
+	public void setValue(Value value) {
+		this.value = value;
 	}
 }

@@ -16,6 +16,8 @@
  */
 package org.beyene.protege.core;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -24,11 +26,14 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.beyene.protege.core.header.UniqueKeyValue;
+
 @XmlRootElement
-@XmlType(name = "unit", propOrder = { "complexTypes", "body" })
+@XmlType(name = "unit", propOrder = { "keyValue", "complexTypes", "body" })
 public class Unit {
 
 	private String name;
+	private UniqueKeyValue keyValue;
 	private List<ComplexType> complexTypes;
 	private ComplexType body;
 
@@ -39,6 +44,15 @@ public class Unit {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@XmlElement(name = "unique-key-value")
+	public UniqueKeyValue getKeyValue() {
+		return keyValue;
+	}
+
+	public void setKeyValue(UniqueKeyValue keyValue) {
+		this.keyValue = keyValue;
 	}
 
 	@XmlElementWrapper(name = "complex-types")
@@ -58,5 +72,10 @@ public class Unit {
 
 	public void setBody(ComplexType body) {
 		this.body = body;
+	}
+	
+	// TODO
+	public Collection<Element> getUnitImage() {
+		return Collections.emptyList();
 	}
 }
