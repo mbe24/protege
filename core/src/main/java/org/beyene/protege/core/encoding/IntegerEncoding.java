@@ -24,27 +24,27 @@ import org.beyene.protege.core.data.Primitive;
 @XmlType(name = "integer-encoding")
 public enum IntegerEncoding implements Encoding<Long> {
 
-	@XmlEnumValue("twos-complement")
-	TWOS_COMPLEMENT("twos-complement");
+    @XmlEnumValue("twos-complement")
+    TWOS_COMPLEMENT("twos-complement");
 
-	private final String key;
+    private final String key;
 
-	private IntegerEncoding(String key) {
-		this.key = key;
-	}
+    private IntegerEncoding(String key) {
+	this.key = key;
+    }
 
-	@Override
-	public String getKey() {
-		return key;
-	}
+    @Override
+    public String getKey() {
+	return key;
+    }
 
-	@Override
-	public int getWidth() {
-		return 0;
-	}
+    @Override
+    public int getWidth() {
+	return 0;
+    }
 
-	@Override
-	public Primitive<Long> getPrimitive() {
-		return Primitive.INTEGER;
-	}
+    @Override
+    public Primitive<Long> getPrimitive() {
+	return Primitive.INTEGER;
+    }
 }

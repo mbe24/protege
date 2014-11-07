@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import java.nio.ByteBuffer;
 
@@ -22,14 +22,15 @@ import org.beyene.protege.core.encoding.Encoding;
 import org.beyene.protege.core.encoding.FloatEncoding;
 import org.beyene.protege.core.data.Primitive;
 
-public class FloatProcessor extends AbstractAtomProcessor<Float> {
+class FloatProcessor implements AtomProcessor<Float> {
 
 	private static final int MAX_BYTES = 4;
 
-	public FloatProcessor() {
-		super(Primitive.FLOAT);
+	@Override
+	public Primitive<Float> getPrimitive() {
+		return Primitive.FLOAT;
 	}
-
+	
 	@Override
 	public Float interpret(byte[] bytes, Encoding<Float> encoding) {
 		ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);

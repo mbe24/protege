@@ -16,6 +16,7 @@
  */
 package org.beyene.protege.core;
 
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
@@ -23,6 +24,10 @@ import javax.xml.bind.annotation.XmlType;
 public class Value {
 
 	private String hex;
+
+	public byte[] getBytes() {
+		return DatatypeConverter.parseHexBinary(hex);
+	}
 
 	@XmlAttribute(name = "hex")
 	public String getHex() {

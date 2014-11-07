@@ -42,6 +42,14 @@ public class Protocol {
 		this.name = name;
 	}
 
+	public ComplexType getType(String name) {
+		for (ComplexType type : complexTypes)
+			if (type.getName().equals(name))
+				return type;
+		
+		throw new IllegalArgumentException(String.format("There is no type like '%s'!", name));
+	}
+
 	@XmlElementWrapper(name = "complex-types")
 	@XmlElement(name = "type")
 	public List<ComplexType> getComplexTypes() {

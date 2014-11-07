@@ -14,27 +14,41 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import org.beyene.protege.core.data.Primitive;
 import org.beyene.protege.core.encoding.Encoding;
 
-abstract class AbstractAtomProcessor<T> implements AtomProcessor<T> {
+class ByteProcessor implements AtomProcessor<Byte[]> {
 
-	protected final Primitive<T> primitive;
-
-	public AbstractAtomProcessor(Primitive<T> primitive) {
-		this.primitive = primitive;
+	@Override
+	public Primitive<Byte[]> getPrimitive() {
+		return Primitive.BYTES;
+	}
+	
+	@Override
+	public Byte[] interpret(byte[] bytes, Encoding<Byte[]> encoding) {
+		return box(bytes);
 	}
 
 	@Override
-	public Primitive<T> getPrimitive() {
-		return primitive;
+	public byte[] toBytes(Byte[] element, Encoding<Byte[]> encoding, int bits) {
+		return unbox(element);
 	}
 
-	@Override
-	public abstract T interpret(byte[] bytes, Encoding<T> encoding);
+	private static Byte[] box(byte[] bytes) {
+		Byte[] boxed = new Byte[bytes.length];
+		for (int i = 0; i < boxed.length; i++) {
+			boxed[i] = bytes[i];
+		}
+		return boxed;
+	}
 
-	@Override
-	public abstract byte[] toBytes(T element, Encoding<T> encoding, int bits);
+	private static byte[] unbox(Byte[] bytes) {
+		byte[] boxed = new byte[bytes.length];
+		for (int i = 0; i < boxed.length; i++) {
+			boxed[i] = bytes[i];
+		}
+		return boxed;
+	}
 }

@@ -14,27 +14,16 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import org.beyene.protege.core.data.Primitive;
 import org.beyene.protege.core.encoding.Encoding;
 
-public class BooleanProcessor extends AbstractAtomProcessor<Boolean> {
+public interface AtomProcessor<T> {
 
-	// mapping needed for conversion
-	public BooleanProcessor() {
-		super(Primitive.BOOLEAN);
-	}
+	public Primitive<T> getPrimitive();
 
-	@Override
-	public Boolean interpret(byte[] bytes, Encoding<Boolean> encoding) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public T interpret(byte[] bytes, Encoding<T> encoding);
 
-	@Override
-	public byte[] toBytes(Boolean element, Encoding<Boolean> encoding, int bits) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public byte[] toBytes(T element, Encoding<T> encoding, int bits);
 }

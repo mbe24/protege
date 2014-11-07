@@ -14,19 +14,20 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import java.nio.ByteBuffer;
 
 import org.beyene.protege.core.encoding.Encoding;
 import org.beyene.protege.core.data.Primitive;
 
-public class IntegerProcessor extends AbstractAtomProcessor<Long> {
+class IntegerProcessor implements AtomProcessor<Long> {
 
 	private static final int MAX_BYTES = 8;
 
-	public IntegerProcessor() {
-		super(Primitive.INTEGER);
+	@Override
+	public Primitive<Long> getPrimitive() {
+		return Primitive.INTEGER;
 	}
 
 	@Override

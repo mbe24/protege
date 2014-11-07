@@ -14,9 +14,11 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import org.beyene.protege.core.encoding.IntegerEncoding;
+import org.beyene.protege.processor.atom.AtomProcessor;
+import org.beyene.protege.processor.atom.IntegerProcessor;
 import org.beyene.protege.processor.util.ByteUtil;
 import org.junit.Assert;
 import org.junit.Test;

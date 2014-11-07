@@ -14,11 +14,13 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import java.util.Arrays;
 
 import org.beyene.protege.core.encoding.StringEncoding;
+import org.beyene.protege.processor.atom.AtomProcessor;
+import org.beyene.protege.processor.atom.StringProcessor;
 import org.junit.Assert;
 import org.junit.Test;
 

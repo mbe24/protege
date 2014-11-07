@@ -14,17 +14,18 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import java.nio.charset.Charset;
 
 import org.beyene.protege.core.encoding.Encoding;
 import org.beyene.protege.core.data.Primitive;
 
-public class StringProcessor extends AbstractAtomProcessor<String> {
+class StringProcessor implements AtomProcessor<String> {
 
-	public StringProcessor() {
-		super(Primitive.STRING);
+	@Override
+	public Primitive<String> getPrimitive() {
+		return Primitive.STRING;
 	}
 
 	@Override

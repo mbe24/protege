@@ -39,7 +39,7 @@ public final class Primitive<T> {
 
 	private final Class<T> type;
 	private final Type mappingType;
-
+	
 	private Primitive(Class<T> type, Type mappingType) {
 		this.type = type;
 		this.mappingType = mappingType;
@@ -51,6 +51,17 @@ public final class Primitive<T> {
 
 	public Type getMappingType() {
 		return mappingType;
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// object identity is sufficient
+		return super.equals(obj);
 	}
 
 	public static Primitive<?> forType(Type type) {

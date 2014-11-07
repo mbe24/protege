@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern;
+package org.beyene.protege.processor;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -88,7 +88,7 @@ public class InputParser implements Closeable {
 	}
 
 	void setException() {
-		this.hasException.set(true);
+		hasException.set(true);
 		ready.countDown();
 	}
 

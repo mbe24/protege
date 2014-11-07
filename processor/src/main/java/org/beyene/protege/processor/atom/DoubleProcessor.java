@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.pattern.atom;
+package org.beyene.protege.processor.atom;
 
 import java.nio.ByteBuffer;
 
@@ -22,7 +22,7 @@ import org.beyene.protege.core.data.Primitive;
 import org.beyene.protege.core.encoding.DoubleEncoding;
 import org.beyene.protege.core.encoding.Encoding;
 
-public class DoubleProcessor implements AtomProcessor<Double> {
+class DoubleProcessor implements AtomProcessor<Double> {
 
 	private static final int MAX_BYTES = 8;
 
