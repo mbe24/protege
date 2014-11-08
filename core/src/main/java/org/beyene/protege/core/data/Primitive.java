@@ -29,7 +29,7 @@ public final class Primitive<T> {
 	public static final Primitive<Long> INTEGER = new Primitive<>(Long.class, Type.INTEGER);
 	public static final Primitive<String> STRING = new Primitive<>(String.class, Type.STRING);
 	public static final Primitive<Float> FLOAT = new Primitive<>(Float.class, Type.FLOAT);
-	public static final Primitive<Double> DOUBLE = new Primitive<>(Double.class, Type.FLOAT);
+	public static final Primitive<Double> DOUBLE = new Primitive<>(Double.class, Type.DOUBLE);
 
 	private static final Map<Type, Primitive<?>> types = new HashMap<>();
 	static {

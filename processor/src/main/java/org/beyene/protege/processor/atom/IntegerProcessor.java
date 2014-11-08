@@ -19,6 +19,7 @@ package org.beyene.protege.processor.atom;
 import java.nio.ByteBuffer;
 
 import org.beyene.protege.core.encoding.Encoding;
+import org.beyene.protege.core.encoding.IntegerEncoding;
 import org.beyene.protege.core.data.Primitive;
 
 class IntegerProcessor implements AtomProcessor<Long> {
@@ -37,7 +38,7 @@ class IntegerProcessor implements AtomProcessor<Long> {
 		// bb.position(MAX_BYTES - bytes.length);
 
 		// if negative value is represented, 0xFF is appended to fill 64 bits
-		if (bytes[0] < (byte) 0x00)
+		if (bytes[0] < (byte) 0x00 && encoding == IntegerEncoding.TWOS_COMPLEMENT)
 			for (int i = 0; i < MAX_BYTES - bytes.length; i++)
 				bb.put((byte) 0xFF);
 		else

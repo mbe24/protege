@@ -25,7 +25,10 @@ import org.beyene.protege.core.data.Primitive;
 public enum IntegerEncoding implements Encoding<Long> {
 
     @XmlEnumValue("twos-complement")
-    TWOS_COMPLEMENT("twos-complement");
+    TWOS_COMPLEMENT("twos-complement"),
+    
+    @XmlEnumValue("unsigned")
+    UNSIGNED("unsigned");
 
     private final String key;
 

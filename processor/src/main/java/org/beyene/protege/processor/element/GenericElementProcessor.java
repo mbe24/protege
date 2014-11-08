@@ -23,97 +23,79 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.beyene.protege.core.Element;
-import org.beyene.protege.core.Length;
 import org.beyene.protege.core.Type;
-import org.beyene.protege.core.Value;
 import org.beyene.protege.core.data.Primitive;
 import org.beyene.protege.core.encoding.Classifications;
-import org.beyene.protege.core.encoding.DoubleEncoding;
-import org.beyene.protege.core.encoding.FloatEncoding;
-import org.beyene.protege.core.encoding.IntegerEncoding;
 import org.beyene.protege.processor.util.IoUtil;
 
 public class GenericElementProcessor implements ElementProcessor {
+
+    private static final LengthProcessor lengthProcessor = new LengthProcessor();
 
     @Override
     public Object fromStream(Element e, InputStream is) throws IOException {
 	byte[] bytes = null;
 	Type type = e.getType();
 	String classification = e.getClassification();
-	Length l = e.getLength();
 
-	int length = 0;
-	if (l != null) {
-	    Integer bits = l.getBit();
-	    if (bits != null) {
-		length = bits;
-	    } else {
-		Integer lengthField = l.getPrecedingLengthFieldSize();
-		if (lengthField == null)
-		    throw new IllegalArgumentException(
-			    "Preceding length field is null!");
-
-		byte[] preBytes = IoUtil.readBytes(lengthField / 8, is);
-		/*
-		 * conversion to int should be safe, since preceding length
-		 * field of more than 4 byte is not realistic (1 byte is enough)
-		 */
-		length = getProcessor(Primitive.INTEGER).interpret(preBytes,
-			IntegerEncoding.TWOS_COMPLEMENT).intValue();
-	    }
-	} else {
-	    Value v = e.getValue();
-	    if (v != null)
-		length = 8 * v.getBytes().length;
-	}
-
+	int length = lengthProcessor.fromStream(e, is);
 	Object result = null;
-
+	
+	// TODO code too long, use map or sth. to stop iterating the same pattern
 	//@formatter:off
-	    switch (type) {
-		case BOOLEAN:
-		    	// TODO implement mechanism for boolean, e.g. mapping
-			Primitive<Boolean> _boolean = Primitive.BOOLEAN;
-			result = getProcessor(_boolean).interpret(bytes, null);
-			break;
-			
-		case BYTE:
-			Primitive<Byte[]> _byte = Primitive.BYTES;
-			result = getProcessor(_byte).interpret(bytes, null);
-			break;
-			
-		case DOUBLE:
-			Primitive<Double> _double = Primitive.DOUBLE;
-			// if classification == null then set to default encoding
-			DoubleEncoding de = DoubleEncoding.valueOf(classification);
-			bytes = IoUtil.readBytes(de.getWidth() / 8, is);
-			result = getProcessor(_double).interpret(bytes, de);
-			break;
-			
-		case FLOAT:
-			Primitive<Float> _float = Primitive.FLOAT;
-			FloatEncoding fe = FloatEncoding.valueOf(classification);
-			bytes = IoUtil.readBytes(fe.getWidth() / 8, is);
-			result = getProcessor(_float).interpret(bytes, fe);
-			break;
-			
-		case INTEGER:
-			Primitive<Long> _integer = Primitive.INTEGER;
-			bytes = IoUtil.readBytes(length / 8, is);
-			result = getProcessor(_integer).interpret(bytes, Classifications.get(classification, _integer));
-			break;
-			
-		case STRING:
-			Primitive<String> _string = Primitive.STRING;
-			bytes = IoUtil.readBytes(length / 8, is);
-			result = getProcessor(_string).interpret(bytes, Classifications.get(classification, _string));
-			break;
-			
-		default:
-			break;
-		}
-		//@formatter:on
+	switch (type) {
+	case BOOLEAN:
+	    // TODO implement mechanism for boolean, e.g. mapping
+	    Primitive<Boolean> _boolean = Primitive.BOOLEAN;
+	    result = getProcessor(_boolean).interpret(bytes, null);
+	    break;
+		
+	case BYTE:
+	    Primitive<Byte[]> _byte = Primitive.BYTES;
+	    result = getProcessor(_byte).interpret(bytes, null);
+	    break;
+		
+	case DOUBLE:
+	    Primitive<Double> _double = Primitive.DOUBLE;
+	    // if classification == null then set to default encoding
+	    bytes = IoUtil.readBytes(length, is);
+	    result = getProcessor(_double).interpret(bytes, Classifications.get(classification, _double));
+	    break;
+		
+	case FLOAT:
+	    Primitive<Float> _float = Primitive.FLOAT;
+	    bytes = IoUtil.readBytes(length, is);
+	    result = getProcessor(_float).interpret(bytes, Classifications.get(classification, _float));
+	    break;
+		
+	case INTEGER:
+	    Primitive<Long> _integer = Primitive.INTEGER;
+	    bytes = IoUtil.readBytes(length / 8, is);
+	    result = getProcessor(_integer).interpret(bytes, Classifications.get(classification, _integer));
+	    break;
+
+	case STRING:
+	    Primitive<String> _string = Primitive.STRING;
+	    bytes = IoUtil.readBytes(length / 8, is);
+	    result = getProcessor(_string).interpret(bytes, Classifications.get(classification, _string));
+	    break;
+
+	default:
+	    // if number of primitives does not increase, this default case can never be reached.
+	    throw new IllegalStateException();
+	}
+	//@formatter:on
 	return result;
+    }
+
+    // for testing purposes
+    <T> T fromStream(Element e, InputStream is, Primitive<T> primitive) throws IOException {
+	if (e.getType() != primitive.getMappingType())
+	    throw new IllegalArgumentException(
+		    String.format("Element's type %s and primitive's type %s are not compatible!",
+			    e.getType().name(), primitive.getMappingType().name()));
+	
+	return primitive.getType().cast(fromStream(e, is));
     }
 
     @Override
