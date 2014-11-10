@@ -24,45 +24,49 @@ import org.beyene.protege.core.data.Primitive;
 
 class IntegerProcessor implements AtomProcessor<Long> {
 
-	private static final int MAX_BYTES = 8;
+    private static final int MAX_BYTES = 8;
 
-	@Override
-	public Primitive<Long> getPrimitive() {
-		return Primitive.INTEGER;
-	}
+    @Override
+    public Primitive<Long> getPrimitive() {
+	return Primitive.INTEGER;
+    }
 
-	@Override
-	public Long interpret(byte[] bytes, Encoding<Long> encoding) {
-		ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
-		// bb.order(ByteOrder.LITTLE_ENDIAN);
-		// bb.position(MAX_BYTES - bytes.length);
+    @Override
+    public Long interpret(byte[] bytes, Encoding<Long> encoding) {
+	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
+	// bb.order(ByteOrder.LITTLE_ENDIAN);
+	// bb.position(MAX_BYTES - bytes.length);
 
-		// if negative value is represented, 0xFF is appended to fill 64 bits
-		if (bytes[0] < (byte) 0x00 && encoding == IntegerEncoding.TWOS_COMPLEMENT)
-			for (int i = 0; i < MAX_BYTES - bytes.length; i++)
-				bb.put((byte) 0xFF);
-		else
-			for (int i = 0; i < MAX_BYTES - bytes.length; i++)
-				bb.put((byte) 0x00);
+	// if negative value is represented, 0xFF is appended to fill 64 bits
+	if (bytes[0] < (byte) 0x00
+		&& encoding == IntegerEncoding.TWOS_COMPLEMENT)
+	    for (int i = 0; i < MAX_BYTES - bytes.length; i++)
+		bb.put((byte) 0xFF);
+	else
+	    for (int i = 0; i < MAX_BYTES - bytes.length; i++)
+		bb.put((byte) 0x00);
 
-		bb.put(bytes);
-		bb.position(0);
-		return bb.asLongBuffer().get();
-	}
+	bb.put(bytes);
+	bb.position(0);
+	return bb.asLongBuffer().get();
+    }
 
-	@Override
-	public byte[] toBytes(Long element, Encoding<Long> encoding, int bits) {
-		ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
-		// bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.putLong(element);
+    @Override
+    public byte[] toBytes(Long element, Encoding<Long> encoding, int bits) {
+	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
+	// bb.order(ByteOrder.LITTLE_ENDIAN);
+	bb.putLong(element);
 
-		int bytes = bits / Byte.SIZE;
-		if (bits % Byte.SIZE != 0)
-			bytes++;
+	int bytes = bits / Byte.SIZE;
+	if (bits % Byte.SIZE != 0)
+	    bytes++;
 
-		bb.position(bb.limit() - bytes);
-		byte[] encoded = new byte[bytes];
-		bb.get(encoded);
-		return encoded;
-	}
+	bb.position(bb.limit() - bytes);
+	byte[] encoded = new byte[bytes];
+	bb.get(encoded);
+
+	assert interpret(encoded, encoding).equals(element) : "Encoded bytes are invalid!";
+
+	return encoded;
+    }
 }

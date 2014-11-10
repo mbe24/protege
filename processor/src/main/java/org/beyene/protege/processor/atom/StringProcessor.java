@@ -23,26 +23,24 @@ import org.beyene.protege.core.data.Primitive;
 
 class StringProcessor implements AtomProcessor<String> {
 
-	@Override
-	public Primitive<String> getPrimitive() {
-		return Primitive.STRING;
-	}
+    @Override
+    public Primitive<String> getPrimitive() {
+	return Primitive.STRING;
+    }
 
-	@Override
-	public String interpret(byte[] bytes, Encoding<String> encoding) {
-		Charset charset = Charset.forName(encoding.getKey());
-		return new String(bytes, charset);
-	}
+    @Override
+    public String interpret(byte[] bytes, Encoding<String> encoding) {
+	Charset charset = Charset.forName(encoding.getKey());
+	return new String(bytes, charset);
+    }
 
-	@Override
-	public byte[] toBytes(String element, Encoding<String> encoding, int bits) {
-		Charset charset = Charset.forName(encoding.getKey());
-		byte[] bytes = element.getBytes(charset);
+    @Override
+    public byte[] toBytes(String element, Encoding<String> encoding, int bits) {
+	Charset charset = Charset.forName(encoding.getKey());
+	byte[] bytes = element.getBytes(charset);
 
-		assert (bytes.length * 8 == bits) : String
-				.format("Error! Length mismatch while encoding '%s'. %d bits expected, but got %d bits instead.",
-						element, bits, (bytes.length * 8));
-
-		return bytes;
-	}
+	assert interpret(bytes, encoding).equals(element) : "Encoded bytes are invalid!";
+	// TODO only return (bits / 8) bytes
+	return bytes;
+    }
 }

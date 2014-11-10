@@ -22,9 +22,21 @@ import java.io.OutputStream;
 
 import org.beyene.protege.core.Element;
 
-public interface ElementProcessor<T> {
+enum BooleanElementProcessor implements ElementProcessor<Boolean> {
 
-	public T fromStream(Element e, InputStream is) throws IOException;
-	
-	public int toStream(T object, Element e, OutputStream os) throws IOException;
+    INSTANCE;
+    
+    @Override
+    public Boolean fromStream(Element e, InputStream is) throws IOException {
+//	int length = LengthProcessor.INSTANCE.fromStream(e, is);
+	// TODO use int processor and mapping
+//	return getProcessor(Primitive.BOOLEAN).interpret(IoUtil.readBytes(length, is), null);
+	return false;
+    }
+
+    @Override
+    public int toStream(Boolean object, Element e, OutputStream os) throws IOException {
+		return 0;
+	// TODO Auto-generated method stub
+    }
 }

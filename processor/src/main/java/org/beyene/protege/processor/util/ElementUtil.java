@@ -16,35 +16,18 @@
  */
 package org.beyene.protege.processor.util;
 
-import javax.xml.bind.DatatypeConverter;
+import org.beyene.protege.core.Element;
 
-public final class ByteUtil {
+public final class ElementUtil {
 
-    private ByteUtil() {
+    private ElementUtil() {
 	// private constructor to prevent instantiation
     }
-
-    public static byte[] unbox(Byte[] bytes) {
-	byte[] boxed = new byte[bytes.length];
-	for (int i = 0; i < boxed.length; i++) {
-	    boxed[i] = bytes[i];
-	}
-	return boxed;
-    }
-
-    public static Byte[] box(byte[] bytes) {
-	Byte[] boxed = new Byte[bytes.length];
-	for (int i = 0; i < boxed.length; i++) {
-	    boxed[i] = bytes[i];
-	}
-	return boxed;
-    }
-
-    public static String toHexString(byte[] array) {
-	return DatatypeConverter.printHexBinary(array);
-    }
-
-    public static byte[] toByteArray(String s) {
-	return DatatypeConverter.parseHexBinary(s);
+    
+    public static int precedingLengthWritten(Element e) {
+	int length = 0;
+	if (e.getLength() != null && e.getLength().getBit() == null)
+	    length = e.getLength().getPrecedingLengthFieldSize() / 8;
+	return length;
     }
 }

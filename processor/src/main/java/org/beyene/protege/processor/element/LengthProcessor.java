@@ -31,17 +31,21 @@ import org.beyene.protege.core.encoding.Classifications;
 import org.beyene.protege.core.encoding.IntegerEncoding;
 import org.beyene.protege.processor.util.IoUtil;
 
-class LengthProcessor implements ElementProcessor {
+enum LengthProcessor implements ElementProcessor<Integer> {
+
+    INSTANCE;
 
     @Override
     public Integer fromStream(Element e, InputStream is) throws IOException {
 	// doubles and floats have fixed length
 	Type type = e.getType();
 	if (type == Type.DOUBLE)
-	    return Classifications.get(e.getClassification(), Primitive.DOUBLE).getWidth() / 8;
+	    return Classifications.get(e.getClassification(), Primitive.DOUBLE)
+		    .getWidth();
 	else if (type == Type.FLOAT)
-	    return Classifications.get(e.getClassification(), Primitive.FLOAT).getWidth() / 8;
-	
+	    return Classifications.get(e.getClassification(), Primitive.FLOAT)
+		    .getWidth();
+
 	Length l = e.getLength();
 	int length = 0;
 	if (l != null) {
@@ -51,17 +55,20 @@ class LengthProcessor implements ElementProcessor {
 	    } else {
 		Integer lengthField = l.getPrecedingLengthFieldSize();
 		if (lengthField == null)
-		    throw new IllegalArgumentException("Preceding length field is null!");
+		    throw new IllegalArgumentException(
+			    "Preceding length field is null!");
 
 		byte[] preBytes = IoUtil.readBytes(lengthField / 8, is);
 		/*
 		 * conversion to int should be safe, since preceding length
 		 * field of more than 4 byte is not realistic (1 byte is enough)
 		 * 
-		 * NOTE: It's may not be working, if you want an 8 byte unsigned field
-		 * because if the highest bit (of 64) is set, number is interpreted as two's complement.
+		 * NOTE: It's may not be working, if you want an 8 byte unsigned
+		 * field because if the highest bit (of 64) is set, number is
+		 * interpreted as two's complement.
 		 */
-		length = getProcessor(Primitive.INTEGER).interpret(preBytes, IntegerEncoding.UNSIGNED).intValue();
+		length = getProcessor(Primitive.INTEGER).interpret(preBytes,
+			IntegerEncoding.UNSIGNED).intValue();
 	    }
 	} else {
 	    // only used for reading of expected plain bytes
@@ -73,8 +80,45 @@ class LengthProcessor implements ElementProcessor {
     }
 
     @Override
-    public <T> void toStream(T object, Element e, OutputStream os)
+    public int toStream(Integer object, Element e, OutputStream os)
 	    throws IOException {
-	// TODO Auto-generated method stub
+	// doubles and floats have fixed length
+	Type type = e.getType();
+	if (type == Type.DOUBLE)
+	    return Classifications.get(e.getClassification(), Primitive.DOUBLE)
+		    .getWidth();
+	else if (type == Type.FLOAT)
+	    return Classifications.get(e.getClassification(), Primitive.FLOAT)
+		    .getWidth();
+
+	Length l = e.getLength();
+	int length = 0;
+	if (l != null) {
+	    Integer bits = l.getBit();
+	    if (bits != null) {
+		length = bits;
+	    } else {
+		Integer lengthField = l.getPrecedingLengthFieldSize();
+		if (lengthField == null)
+		    throw new IllegalArgumentException(
+			    "Preceding length field is null!");
+		if (object == null)
+		    throw new IllegalArgumentException(
+			    "Preceding length value is null!");
+
+		byte[] bytes = getProcessor(Primitive.INTEGER).toBytes(
+			object.longValue(), IntegerEncoding.UNSIGNED,
+			lengthField);
+
+		IoUtil.writeBytes(bytes, os);
+		length = object;
+	    }
+	} else {
+	    // only used for reading of expected plain bytes
+	    Value v = e.getValue();
+	    if (v != null)
+		length = 8 * v.getBytes().length;
+	}
+	return length;
     }
 }

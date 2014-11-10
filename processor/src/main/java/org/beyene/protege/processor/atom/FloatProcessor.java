@@ -24,42 +24,48 @@ import org.beyene.protege.core.data.Primitive;
 
 class FloatProcessor implements AtomProcessor<Float> {
 
-	private static final int MAX_BYTES = 4;
+    private static final int MAX_BYTES = 4;
 
-	@Override
-	public Primitive<Float> getPrimitive() {
-		return Primitive.FLOAT;
-	}
-	
-	@Override
-	public Float interpret(byte[] bytes, Encoding<Float> encoding) {
-		ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
-		// bb.order(ByteOrder.LITTLE_ENDIAN);
-		// bb.position(MAX_BYTES - bytes.length);
+    @Override
+    public Primitive<Float> getPrimitive() {
+	return Primitive.FLOAT;
+    }
 
-		if (encoding != FloatEncoding.IEEE_754_SINGLE && bytes.length != MAX_BYTES)
-			throw new IllegalArgumentException("Only IEEE 754 single precision encoding supported for type float!");
-		
-		bb.put(bytes);
-		bb.position(0);
-		
-		return Float.intBitsToFloat(bb.asIntBuffer().get());
-	}
+    @Override
+    public Float interpret(byte[] bytes, Encoding<Float> encoding) {
+	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
+	// bb.order(ByteOrder.LITTLE_ENDIAN);
+	// bb.position(MAX_BYTES - bytes.length);
 
-	@Override
-	public byte[] toBytes(Float element, Encoding<Float> encoding, int bits) {
-		ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
-		// bb.order(ByteOrder.LITTLE_ENDIAN);
-		bb.putInt(Float.floatToIntBits(element));
+	if (encoding != FloatEncoding.IEEE_754_SINGLE
+		&& bytes.length != MAX_BYTES)
+	    throw new IllegalArgumentException(
+		    "Only IEEE 754 single precision encoding supported for type float!");
 
-		if (encoding != FloatEncoding.IEEE_754_SINGLE)
-			throw new IllegalArgumentException("Only IEEE 754 single precision encoding supported for type float!");
-		
-		int bytes = 4;
+	bb.put(bytes);
+	bb.position(0);
 
-		bb.position(bb.limit() - bytes);
-		byte[] encoded = new byte[bytes];
-		bb.get(encoded);
-		return encoded;
-	}
+	return Float.intBitsToFloat(bb.asIntBuffer().get());
+    }
+
+    @Override
+    public byte[] toBytes(Float element, Encoding<Float> encoding, int bits) {
+	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
+	// bb.order(ByteOrder.LITTLE_ENDIAN);
+	bb.putInt(Float.floatToIntBits(element));
+
+	if (encoding != FloatEncoding.IEEE_754_SINGLE)
+	    throw new IllegalArgumentException(
+		    "Only IEEE 754 single precision encoding supported for type float!");
+
+	int bytes = 4;
+
+	bb.position(bb.limit() - bytes);
+	byte[] encoded = new byte[bytes];
+	bb.get(encoded);
+
+	assert interpret(encoded, encoding).equals(element) : "Encoded bytes are invalid!";
+
+	return encoded;
+    }
 }

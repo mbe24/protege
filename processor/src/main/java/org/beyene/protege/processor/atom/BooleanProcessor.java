@@ -21,20 +21,24 @@ import org.beyene.protege.core.encoding.Encoding;
 
 class BooleanProcessor implements AtomProcessor<Boolean> {
 
-	@Override
-	public Primitive<Boolean> getPrimitive() {
-		return Primitive.BOOLEAN;
-	}
+    @Override
+    public Primitive<Boolean> getPrimitive() {
+	return Primitive.BOOLEAN;
+    }
 
-	@Override
-	public Boolean interpret(byte[] bytes, Encoding<Boolean> encoding) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Boolean interpret(byte[] bytes, Encoding<Boolean> encoding) {
+	// TODO Auto-generated method stub
+	return null;
+    }
 
-	@Override
-	public byte[] toBytes(Boolean element, Encoding<Boolean> encoding, int bits) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public byte[] toBytes(Boolean element, Encoding<Boolean> encoding, int bits) {
+	// TODO Auto-generated method stub
+
+	// assert interpret(encoded, encoding).equals(element) :
+	// "Encoded bytes are invalid!";
+
+	return null;
+    }
 }

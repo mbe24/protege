@@ -33,7 +33,7 @@ final class SocketListener implements Callable<Void> {
     private final InputStream is;
     private final Protocol p;
 
-    private final ElementProcessor processor = new GenericElementProcessor();
+    private final ElementProcessor<Object> processor = new GenericElementProcessor();
     
     // exceptions
     private IOException ioe;

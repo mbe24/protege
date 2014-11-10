@@ -21,9 +21,26 @@ import org.beyene.protege.core.encoding.Encoding;
 
 public interface AtomProcessor<T> {
 
-	public Primitive<T> getPrimitive();
+    /**
+     * 
+     * @return
+     */
+    public Primitive<T> getPrimitive();
 
-	public T interpret(byte[] bytes, Encoding<T> encoding);
+    /**
+     * 
+     * @param bytes
+     * @param encoding
+     * @return
+     */
+    public T interpret(byte[] bytes, Encoding<T> encoding);
 
-	public byte[] toBytes(T element, Encoding<T> encoding, int bits);
+    /**
+     * 
+     * @param element
+     * @param encoding
+     * @param bits if not needed by current implementation, parameter is ignored.
+     * @return
+     */
+    public byte[] toBytes(T element, Encoding<T> encoding, int bits);
 }

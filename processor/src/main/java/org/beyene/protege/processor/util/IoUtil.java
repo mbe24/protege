@@ -18,6 +18,7 @@ package org.beyene.protege.processor.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public final class IoUtil {
 
@@ -34,5 +35,15 @@ public final class IoUtil {
 	    bytes[i] = (byte) b;
 	}
 	return bytes;
+    }
+    
+    public static int writeBytes(byte[] bytes, OutputStream os) throws IOException {
+	os.write(bytes);
+	return bytes.length;
+    }
+    
+    public static int writeBytes(byte[] bytes, int n, OutputStream os) throws IOException {
+	os.write(bytes, 0, n);
+	return n;
     }
 }

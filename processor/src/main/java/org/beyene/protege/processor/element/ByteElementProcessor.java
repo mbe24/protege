@@ -16,15 +16,31 @@
  */
 package org.beyene.protege.processor.element;
 
+import static org.beyene.protege.processor.atom.AtomProcessorFactory.getProcessor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.beyene.protege.core.Element;
+import org.beyene.protege.core.data.Primitive;
+import org.beyene.protege.processor.util.IoUtil;
 
-public interface ElementProcessor<T> {
+enum ByteElementProcessor implements ElementProcessor<Byte[]> {
 
-	public T fromStream(Element e, InputStream is) throws IOException;
-	
-	public int toStream(T object, Element e, OutputStream os) throws IOException;
+    INSTANCE;
+    
+    @Override
+    public Byte[] fromStream(Element e, InputStream is) throws IOException {
+	int length = LengthProcessor.INSTANCE.fromStream(e, is);
+	return getProcessor(Primitive.BYTES).interpret(IoUtil.readBytes(length / 8, is), null);
+    }
+
+    @Override
+    public int toStream(Byte[] object, Element e, OutputStream os)
+	    throws IOException {
+		return 0;
+	// TODO Auto-generated method stub
+
+    }
 }

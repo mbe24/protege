@@ -24,21 +24,22 @@ import org.beyene.protege.core.data.Primitive;
 
 public final class AtomProcessorFactory {
 
-	private static Map<Primitive<?>, AtomProcessor<?>> processors = new HashMap<Primitive<?>, AtomProcessor<?>>();
-	static {
-		for (AtomProcessor<?> p : Arrays.asList(new BooleanProcessor(),
-				new ByteProcessor(), new DoubleProcessor(),
-				new FloatProcessor(), new IntegerProcessor(),
-				new StringProcessor()))
-			processors.put(p.getPrimitive(), p);
+    private static Map<Primitive<?>, AtomProcessor<?>> processors = new HashMap<Primitive<?>, AtomProcessor<?>>();
+    static {
+	for (AtomProcessor<?> p : Arrays.asList(new BooleanProcessor(),
+		new ByteProcessor(), new DoubleProcessor(),
+		new FloatProcessor(), new IntegerProcessor(),
+		new StringProcessor())) {
+	    processors.put(p.getPrimitive(), p);
 	}
+    }
 
-	private AtomProcessorFactory() {
-		// private constructor to prevent instantiation
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> AtomProcessor<T> getProcessor(Primitive<T> primitive) {
-		return (AtomProcessor<T>) processors.get(primitive);
-	}
+    private AtomProcessorFactory() {
+	// private constructor to prevent instantiation
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> AtomProcessor<T> getProcessor(Primitive<T> primitive) {
+	return (AtomProcessor<T>) processors.get(primitive);
+    }
 }
