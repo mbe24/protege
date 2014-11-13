@@ -24,8 +24,10 @@ import java.util.concurrent.Callable;
 import org.beyene.protege.core.ComplexType;
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Protocol;
+import org.beyene.protege.core.Value;
 import org.beyene.protege.processor.element.ElementProcessor;
 import org.beyene.protege.processor.element.GenericElementProcessor;
+import org.beyene.protege.processor.util.ElementUtil;
 
 final class SocketListener implements Callable<Void> {
 
@@ -44,9 +46,8 @@ final class SocketListener implements Callable<Void> {
 	this.p = p;
     }
 
-    // add notifier for important exceptions
     @Override
-    public Void call() throws Exception {
+    public Void call() {
 	ComplexType header = p.getHeader();
 	Iterator<Element> headerIt = header.getElements().iterator();
 
@@ -57,6 +58,11 @@ final class SocketListener implements Callable<Void> {
 		    Element headerElement = headerIt.next();
 		    @SuppressWarnings("unused")
 		    Object result = processor.fromStream(headerElement, is);
+		    if(ElementUtil.hasValue(headerElement)) {
+			Value value = ElementUtil.getValue(headerElement);
+			byte[] fixed = value.getBytes();
+		    }
+			
 		} else {
 		    // parse unit
 

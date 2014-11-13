@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.beyene.protege.core.Element;
-import org.beyene.protege.core.data.Primitive;
 
 public class GenericElementProcessor implements ElementProcessor<Object> {
 
@@ -34,19 +33,6 @@ public class GenericElementProcessor implements ElementProcessor<Object> {
 	    throw new IllegalStateException();
 
 	return ep.fromStream(e, is);
-    }
-
-    // for testing purposes
-    <T> T fromStream(Element e, InputStream is, Primitive<T> primitive)
-	    throws IOException {
-	if (e.getType() != primitive.getMappingType())
-	    throw new IllegalArgumentException(
-		    String.format(
-			    "Element's type %s and primitive's type %s are not compatible!",
-			    e.getType().name(), primitive.getMappingType()
-				    .name()));
-
-	return primitive.getType().cast(fromStream(e, is));
     }
 
     @Override

@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   
 script:
-  - cd build; mvn install
+  - cd build; mvn verify
   
 
 # whitelist
@@ -14,4 +14,4 @@ branches:
 
 # send coverage data
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+  - mvn jacoco:report coveralls:report

@@ -17,6 +17,7 @@
 package org.beyene.protege.processor.util;
 
 import org.beyene.protege.core.Element;
+import org.beyene.protege.core.Value;
 
 public final class ElementUtil {
 
@@ -29,5 +30,13 @@ public final class ElementUtil {
 	if (e.getLength() != null && e.getLength().getBit() == null)
 	    length = e.getLength().getPrecedingLengthFieldSize() / 8;
 	return length;
+    }
+    
+    public static boolean hasValue(Element e) {
+	return e.getValue() != null;
+    }
+    
+    public static Value getValue(Element e) {
+	return e.getValue();
     }
 }
