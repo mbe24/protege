@@ -16,49 +16,50 @@
  */
 package org.beyene.protege.core.data;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
-public class Composition {
+import org.beyene.protege.core.Type;
 
-	private final String name;
-	private List<Atom> atoms;
+public class Composition implements HeterogeneousContainer {
 
-	private final Map<String, Atom> identifiable = new HashMap<String, Atom>();
+    private String id;
+    private final DataBroker delegate = new DataBroker();
 
-	public Composition(String name, List<Atom> atoms) {
-		this.name = name;
-		this.atoms = atoms;
+    public String getId() {
+        return id;
+    }
 
-		for (Atom atom : atoms)
-			if (atom.hasId())
-				identifiable.put(atom.getId(), atom);
-	}
-	
-	public Composition(String name) {
-		this(name, Collections.<Atom>emptyList());
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    @Override
+    public boolean addPrimitiveValue(String id, Type type, Object value) {
+	return delegate.addPrimitiveValue(id, type, value);
+    }
 
-	public Atom getAtomById(String id) {
-		return identifiable.get(id);
-	}
+    @Override
+    public <T> T getPrimitiveValue(String id, Primitive<T> primitive) {
+	return delegate.getPrimitiveValue(id, primitive);
+    }
 
-	public List<Atom> getAtoms() {
-		return atoms;
-	}
+    @Override
+    public boolean addComplexObject(String id, Composition c) {
+	return delegate.addComplexObject(id, c);
+    }
 
-	public void setAtoms(List<Atom> atoms) {
-		this.atoms = atoms;
-		
-		identifiable.clear();
-		for (Atom atom : atoms)
-			if (atom.hasId())
-				identifiable.put(atom.getId(), atom);
-	}
+    @Override
+    public Composition getComplexObject(String id) {
+	return delegate.getComplexObject(id);
+    }
+
+    @Override
+    public boolean addComplexCollection(String id, Collection<Composition> col) {
+	return delegate.addComplexCollection(id, col);
+    }
+
+    @Override
+    public Collection<Composition> getComplexCollection(String id) {
+	return delegate.getComplexCollection(id);
+    }
 }

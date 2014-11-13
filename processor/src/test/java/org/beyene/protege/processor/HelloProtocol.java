@@ -19,6 +19,7 @@ package org.beyene.protege.processor;
 import java.util.Arrays;
 
 import org.beyene.protege.core.ComplexType;
+import org.beyene.protege.core.Configuration;
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Length;
 import org.beyene.protege.core.Protocol;
@@ -27,6 +28,7 @@ import org.beyene.protege.core.Unit;
 import org.beyene.protege.core.UnitSet;
 import org.beyene.protege.core.Value;
 import org.beyene.protege.core.encoding.DoubleEncoding;
+import org.beyene.protege.core.encoding.IntegerEncoding;
 import org.beyene.protege.core.header.UniqueKeyValue;
 
 public final class HelloProtocol {
@@ -39,6 +41,7 @@ public final class HelloProtocol {
 		Element packetHeader = new Element();
 		packetHeader.setType(Type.BYTE);
 		packetHeader.setValue(value);
+		packetHeader.setId("header-mark");
 
 		Element version = new Element();
 		version.setType(Type.INTEGER);
@@ -46,11 +49,13 @@ public final class HelloProtocol {
 		versionLength.setBit(8);
 		version.setLength(versionLength);
 		version.setId("version");
+		version.setClassification(IntegerEncoding.UNSIGNED.getKey());
 
 		Element totalLength = new Element();
 		totalLength.setType(Type.INTEGER);
 		totalLength.setLength(versionLength);
 		totalLength.setId("total-length");
+		totalLength.setClassification(IntegerEncoding.UNSIGNED.getKey());
 
 		Element unitId = new Element();
 		unitId.setLength(versionLength);
@@ -60,6 +65,10 @@ public final class HelloProtocol {
 		ComplexType header = new ComplexType();
 		header.setElements(Arrays.asList(packetHeader, version, totalLength,
 				unitId));
+		Configuration config = new Configuration();
+		config.setTotalLengthId(totalLength.getId());
+		config.setVersionId(version.getId());
+		header.setConfiguration(config);
 
 		Protocol p = new Protocol();
 		p.setName("hello");

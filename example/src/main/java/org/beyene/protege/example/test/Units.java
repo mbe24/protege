@@ -19,6 +19,7 @@ package org.beyene.protege.example.test;
 import java.util.Arrays;
 
 import org.beyene.protege.core.ComplexType;
+import org.beyene.protege.core.Configuration;
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Length;
 import org.beyene.protege.core.Protocol;
@@ -109,7 +110,11 @@ public class Units {
 		
 		ComplexType header = new ComplexType();
 		header.setElements(Arrays.asList(packetHeader, version, totalLength, unitId));
-
+		Configuration c = new Configuration();
+		c.setTotalLengthId(totalLength.getId());
+		c.setVersionId(version.getId());
+		header.setConfiguration(c);
+		
 		Protocol p = new Protocol();
 		p.setName("hello");
 		p.setHeader(header);

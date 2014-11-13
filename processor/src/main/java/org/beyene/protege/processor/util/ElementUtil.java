@@ -17,6 +17,7 @@
 package org.beyene.protege.processor.util;
 
 import org.beyene.protege.core.Element;
+import org.beyene.protege.core.Length;
 import org.beyene.protege.core.Value;
 
 public final class ElementUtil {
@@ -38,5 +39,21 @@ public final class ElementUtil {
     
     public static Value getValue(Element e) {
 	return e.getValue();
+    }
+    
+    public static boolean hasLength(Element e) {
+	return e.getLength() != null;
+    }
+    
+    public static Length getLength(Element e) {
+	return e.getLength();
+    }
+    
+    public static boolean hasFixedLength(Element e) {
+	return hasLength(e) && getLength(e).getBit() != null;
+    }
+    
+    public static int getFixedLength(Element e) {
+	return getLength(e).getBit();
     }
 }

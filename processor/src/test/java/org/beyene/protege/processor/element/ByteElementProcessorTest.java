@@ -32,7 +32,7 @@ import org.junit.rules.ExpectedException;
 public class ByteElementProcessorTest {
 
     @Rule
-    public ExpectedException thrown= ExpectedException.none();
+    public ExpectedException thrown = ExpectedException.none();
     
     private static final ByteElementProcessor ep = ByteElementProcessor.INSTANCE;
     

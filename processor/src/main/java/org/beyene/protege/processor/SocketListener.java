@@ -16,69 +16,76 @@
  */
 package org.beyene.protege.processor;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.concurrent.Callable;
 
-import org.beyene.protege.core.ComplexType;
-import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Protocol;
-import org.beyene.protege.core.Value;
-import org.beyene.protege.processor.element.ElementProcessor;
-import org.beyene.protege.processor.element.GenericElementProcessor;
-import org.beyene.protege.processor.util.ElementUtil;
+import org.beyene.protege.core.data.DataUnit;
+import org.beyene.protege.processor.protocol.DefaultHeaderProcessor;
+import org.beyene.protege.processor.protocol.DefaultUnitProcessor;
+import org.beyene.protege.processor.protocol.HeaderProcessor;
+import org.beyene.protege.processor.protocol.UnitProcessor;
+import org.beyene.protege.processor.util.IoUtil;
+import org.beyene.protege.processor.util.ProtocolUtil;
 
-final class SocketListener implements Callable<Void> {
+final class SocketListener implements Callable<Void>, AutoCloseable {
 
-    private final InputParser ip;
+    private final InputReader reader;
     private final InputStream is;
     private final Protocol p;
 
-    private final ElementProcessor<Object> processor = new GenericElementProcessor();
+    private HeaderProcessor headerProcessor = DefaultHeaderProcessor.INSTANCE;
+    private UnitProcessor unitProcessor = DefaultUnitProcessor.INSTANCE;
+    
+    private boolean online = true;
     
     // exceptions
     private IOException ioe;
 
-    public SocketListener(InputParser ip, InputStream is, Protocol p) {
-	this.ip = ip;
+    public SocketListener(InputReader reader, InputStream is, Protocol p) {
+	this.reader = reader;
 	this.is = is;
 	this.p = p;
     }
 
     @Override
     public Void call() {
-	ComplexType header = p.getHeader();
-	Iterator<Element> headerIt = header.getElements().iterator();
 
-	boolean online = true;
+	InputStream currentStream = is;
 	try {
 	    while (online) {
-		if (headerIt.hasNext()) {
-		    Element headerElement = headerIt.next();
-		    @SuppressWarnings("unused")
-		    Object result = processor.fromStream(headerElement, is);
-		    if(ElementUtil.hasValue(headerElement)) {
-			Value value = ElementUtil.getValue(headerElement);
-			byte[] fixed = value.getBytes();
-		    }
-			
-		} else {
-		    // parse unit
-
-		    headerIt = header.getElements().iterator();
+		DataUnit dataUnit = headerProcessor.fromStream(p, currentStream);
+		
+		int totalLength = ProtocolUtil.getTotalLength(dataUnit, p);
+		/*
+		 * could be read in parallel for instance.
+		 */
+		if (totalLength != -1) {
+		    int toRead = totalLength - ProtocolUtil.getHeaderBytes(p);
+		    byte[] bytes = IoUtil.readBytes(toRead, currentStream);
+		    currentStream = new ByteArrayInputStream(bytes);
 		}
 
+		dataUnit = unitProcessor.fromStream(dataUnit, p, currentStream);
+		reader.supply(dataUnit);
+		
+		currentStream = is;
 	    }
 	} catch (IOException e) {
 	    ioe = e;
-	    ip.setException();
+	    reader.setException();
 	}
-
 	return null;
     }
 
     IOException getIOException() {
 	return ioe;
+    }
+
+    @Override
+    public void close() {
+	online = false;
     }
 }

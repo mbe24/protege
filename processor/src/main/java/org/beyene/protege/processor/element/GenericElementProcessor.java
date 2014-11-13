@@ -22,13 +22,16 @@ import java.io.OutputStream;
 
 import org.beyene.protege.core.Element;
 
-public class GenericElementProcessor implements ElementProcessor<Object> {
+public enum GenericElementProcessor implements ElementProcessor<Object> {
+
+    INSTANCE;
 
     @Override
     public Object fromStream(Element e, InputStream is) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
 
-	// if number of types does not increase, this default case can never be reached.
+	// if number of types does not increase, this default case can never be
+	// reached.
 	if (ep == null)
 	    throw new IllegalStateException();
 
@@ -39,7 +42,8 @@ public class GenericElementProcessor implements ElementProcessor<Object> {
     public int toStream(Object object, Element e, OutputStream os) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
 
-	// if number of types does not increase, this default case can never be reached.
+	// if number of types does not increase, this default case can never be
+	// reached.
 	if (ep == null)
 	    throw new IllegalStateException();
 	return ep.toStream(object, e, os);

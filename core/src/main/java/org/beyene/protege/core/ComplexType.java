@@ -25,10 +25,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
-@XmlType(name = "complex-type", propOrder = { "elements" })
+@XmlType(name = "complex-type", propOrder = { "configuration", "elements" })
 public class ComplexType {
 
 	private String name;
+	private Configuration config;
 	private List<Element> elements;
 
 	@XmlAttribute(name = "name")
@@ -38,6 +39,15 @@ public class ComplexType {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@XmlElement(name = "configuration")
+	public Configuration getConfiguration() {
+	    return config;
+	}
+
+	public void setConfiguration(Configuration configuration) {
+	    this.config = configuration;
 	}
 
 	@XmlElementWrapper(name = "elements")

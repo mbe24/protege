@@ -16,72 +16,51 @@
  */
 package org.beyene.protege.core.data;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 
-public class DataUnit {
+import org.beyene.protege.core.Type;
+import org.beyene.protege.core.Unit;
 
-	private final String name;
+public class DataUnit implements HeterogeneousContainer {
 
-	private List<Atom> atoms;
-	private final Map<String, Atom> identifiableAtoms = new HashMap<String, Atom>();
+    private Unit unit;
+    private final DataBroker delegate = new DataBroker();
 
-	private List<Composition> compositions;
-	private final Map<String, Composition> identifiableCompositions = new HashMap<String, Composition>();
+    public Unit getUnit() {
+        return unit;
+    }
 
-	public DataUnit(String name, List<Atom> atoms, List<Composition> compositions) {
-		this.name = name;
-		this.atoms = atoms;
-		this.compositions = compositions;
-		
-		for (Atom atom : atoms)
-			if (atom.hasId())
-				identifiableAtoms.put(atom.getId(), atom);
-		
-		for (Composition composition : compositions)
-			identifiableCompositions.put(composition.getName(), composition);
-	}
-	
-	public DataUnit(String name) {
-		this(name, Collections.<Atom>emptyList(), Collections.<Composition>emptyList());
-	}
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
 
-	public String getName() {
-		return name;
-	}
-	
-	public List<Atom> getAtoms() {
-		return atoms;
-	}
+    @Override
+    public boolean addPrimitiveValue(String id, Type type, Object value) throws IllegalArgumentException {
+	return delegate.addPrimitiveValue(id, type, value);
+    }
 
-	public void setAtoms(List<Atom> atoms) {
-		this.atoms = atoms;
-		
-		identifiableAtoms.clear();
-		for (Atom atom : atoms)
-			if (atom.hasId())
-				identifiableAtoms.put(atom.getId(), atom);
-	}
+    @Override
+    public <T> T getPrimitiveValue(String id, Primitive<T> primitive) throws IllegalArgumentException {
+	return delegate.getPrimitiveValue(id, primitive);
+    }
 
-	public List<Composition> getCompositions() {
-		return compositions;
-	}
+    @Override
+    public boolean addComplexObject(String id, Composition c) {
+	return delegate.addComplexObject(id, c);
+    }
 
-	public void setCompositions(List<Composition> compositions) {
-		this.compositions = compositions;
-		
-		identifiableCompositions.clear();
-		for (Composition composition : compositions)
-			identifiableCompositions.put(composition.getName(), composition);
-	}
+    @Override
+    public Composition getComplexObject(String id) {
+	return delegate.getComplexObject(id);
+    }
 
-	public Atom getAtomById(String id) {
-		return identifiableAtoms.get(id);
-	}
+    @Override
+    public boolean addComplexCollection(String id, Collection<Composition> col) {
+	return delegate.addComplexCollection(id, col);
+    }
 
-	public Composition getCompositionById(String id) {
-		return identifiableCompositions.get(id);
-	}
+    @Override
+    public Collection<Composition> getComplexCollection(String id) {
+	return delegate.getComplexCollection(id);
+    }
 }
