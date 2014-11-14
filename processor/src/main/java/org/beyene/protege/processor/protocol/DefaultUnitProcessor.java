@@ -100,6 +100,14 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 
 		int elementsAdded = addElements(e, ct, occurrences, it);
 		if (elementsAdded > 0) {
+		    /*
+		     * data container was removed due to elementsleft being null,
+		     * since elements got added, we put it back in
+		     */
+		    if (elementsLeft == 0) {
+			containerPerLevel.offerFirst(data);
+		    }
+		    
 		    elementsLeft = elementsPerLevel.pollFirst();
 		    elementsLeft += occurrences - 1;
 		    elementsPerLevel.offerFirst(elementsLeft);

@@ -65,6 +65,6 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
 	} else
 	    bytes = getProcessor(Primitive.BYTES).toBytes(object, null, length);
 
-	return IoUtil.writeBytes(bytes, length / 8, os);
+	return IoUtil.writeBytes(bytes, length / 8, os) + ElementUtil.precedingLengthWritten(e);
     }
 }
