@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 public class ComplexType {
 
 	private String name;
+	
+	// TODO Create own class for header and remove configuration
 	private Configuration config;
 	private List<Element> elements;
 

@@ -36,8 +36,8 @@ final class SocketListener implements Callable<Void>, AutoCloseable {
     private final InputStream is;
     private final Protocol p;
 
-    private HeaderProcessor headerProcessor = DefaultHeaderProcessor.INSTANCE;
-    private UnitProcessor unitProcessor = DefaultUnitProcessor.INSTANCE;
+    private final HeaderProcessor headerProcessor;
+    private final UnitProcessor unitProcessor = DefaultUnitProcessor.INSTANCE;
     
     private boolean online = true;
     
@@ -48,6 +48,7 @@ final class SocketListener implements Callable<Void>, AutoCloseable {
 	this.reader = reader;
 	this.is = is;
 	this.p = p;
+	this.headerProcessor = new DefaultHeaderProcessor(p);
     }
 
     @Override

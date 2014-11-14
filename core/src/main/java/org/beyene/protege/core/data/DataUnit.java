@@ -50,16 +50,6 @@ public class DataUnit implements HeterogeneousContainer {
     }
 
     @Override
-    public Composition getComplexObject(String id) {
-	return delegate.getComplexObject(id);
-    }
-
-    @Override
-    public boolean addComplexCollection(String id, Collection<Composition> col) {
-	return delegate.addComplexCollection(id, col);
-    }
-
-    @Override
     public Collection<Composition> getComplexCollection(String id) {
 	return delegate.getComplexCollection(id);
     }

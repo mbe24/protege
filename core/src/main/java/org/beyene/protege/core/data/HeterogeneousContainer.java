@@ -28,9 +28,5 @@ public interface HeterogeneousContainer {
     
     public boolean addComplexObject(String id, Composition c);
     
-    public Composition getComplexObject(String id);
-    
-    public boolean addComplexCollection(String id, Collection<Composition> col);
-    
     public Collection<Composition> getComplexCollection(String id); 
 }

@@ -16,6 +16,7 @@
  */
 package org.beyene.protege.core.data;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,8 @@ public class DataBroker implements HeterogeneousContainer {
     }
 
     @Override
-    public boolean addPrimitiveValue(String id, Type type, Object value) throws IllegalArgumentException {
+    public boolean addPrimitiveValue(String id, Type type, Object value)
+	    throws IllegalArgumentException {
 	if (id == null)
 	    return false;
 
@@ -50,7 +52,8 @@ public class DataBroker implements HeterogeneousContainer {
     }
 
     @Override
-    public <T> T getPrimitiveValue(String id, Primitive<T> primitive) throws IllegalArgumentException {
+    public <T> T getPrimitiveValue(String id, Primitive<T> primitive)
+	    throws IllegalArgumentException {
 	Map<String, Object> typeMap = primitives
 		.get(primitive.getMappingType());
 	if (!typeMap.containsKey(id))
@@ -69,22 +72,43 @@ public class DataBroker implements HeterogeneousContainer {
     public boolean addComplexObject(String id, Composition c) {
 	if (id == null)
 	    return false;
-	
-	return complexObjects.put(id, c) == null;
+
+	if (complexCollections.containsKey(id)) {
+	    complexCollections.get(id).add(c);
+	}
+	/*
+	 * no mapping for single composition means its either a list element or
+	 * single element
+	 */
+	else if (!complexObjects.containsKey(id)) {
+	    complexObjects.put(id, c);
+	}
+	else {
+	    /*
+	     * if there already is a mapping, composition gets added to a list
+	     */
+	    Collection<Composition> list = new ArrayList<>();
+	    Composition toBeAdded = complexObjects.remove(id);
+	    list.add(toBeAdded);
+	    list.add(c);
+	    complexCollections.put(id, list);
+	}
+	return true;
     }
 
-    @Override
-    public Composition getComplexObject(String id) {
-	return complexObjects.get(id);
-    }
-
-    @Override
-    public boolean addComplexCollection(String id, Collection<Composition> col) {
-	if (id == null)
-	    return false;
-	
-	return complexCollections.put(id, col) == null;
-    }
+    // @Override
+    // public Composition getComplexObject(String id) {
+    // return complexObjects.get(id);
+    // }
+    //
+    // @Override
+    // public boolean addComplexCollection(String id, Collection<Composition>
+    // col) {
+    // if (id == null)
+    // return false;
+    //
+    // return complexCollections.put(id, col) == null;
+    // }
 
     @Override
     public Collection<Composition> getComplexCollection(String id) {

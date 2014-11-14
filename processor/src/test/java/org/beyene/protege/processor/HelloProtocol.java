@@ -29,6 +29,7 @@ import org.beyene.protege.core.UnitSet;
 import org.beyene.protege.core.Value;
 import org.beyene.protege.core.encoding.DoubleEncoding;
 import org.beyene.protege.core.encoding.IntegerEncoding;
+import org.beyene.protege.core.encoding.StringEncoding;
 import org.beyene.protege.core.header.UniqueKeyValue;
 
 public final class HelloProtocol {
@@ -68,6 +69,7 @@ public final class HelloProtocol {
 		Configuration config = new Configuration();
 		config.setTotalLengthId(totalLength.getId());
 		config.setVersionId(version.getId());
+		config.setUnitId(unitId.getId());
 		header.setConfiguration(config);
 
 		Protocol p = new Protocol();
@@ -82,11 +84,13 @@ public final class HelloProtocol {
 		firstName.setId("first-name");
 		firstName.setType(Type.STRING);
 		firstName.setLength(l);
+		firstName.setClassification(StringEncoding.UTF_8.getKey());
 
 		Element lastName = new Element();
 		lastName.setId("last-name");
 		lastName.setType(Type.STRING);
 		lastName.setLength(l);
+		lastName.setClassification(StringEncoding.UTF_8.getKey());
 
 		Length genderLength = new Length();
 		genderLength.setBit(8);
@@ -95,6 +99,7 @@ public final class HelloProtocol {
 		gender.setId("gender");
 		gender.setType(Type.STRING);
 		gender.setLength(genderLength);
+		gender.setClassification(StringEncoding.UTF_8.getKey());
 
 		ComplexType personType = new ComplexType();
 		personType.setElements(Arrays.asList(firstName, lastName, gender));
@@ -133,6 +138,7 @@ public final class HelloProtocol {
 		m.setPrecedingLengthFieldSize(8);
 
 		Element personList = new Element();
+		personList.setId("persons");
 		personList.setClassification(personType.getName());
 		personList.setLength(m);
 

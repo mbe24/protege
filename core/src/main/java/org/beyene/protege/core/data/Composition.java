@@ -21,7 +21,7 @@ import java.util.Collection;
 import org.beyene.protege.core.Type;
 
 public class Composition implements HeterogeneousContainer {
-
+    
     private String id;
     private final DataBroker delegate = new DataBroker();
 
@@ -46,16 +46,6 @@ public class Composition implements HeterogeneousContainer {
     @Override
     public boolean addComplexObject(String id, Composition c) {
 	return delegate.addComplexObject(id, c);
-    }
-
-    @Override
-    public Composition getComplexObject(String id) {
-	return delegate.getComplexObject(id);
-    }
-
-    @Override
-    public boolean addComplexCollection(String id, Collection<Composition> col) {
-	return delegate.addComplexCollection(id, col);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class Protocol {
 		this.name = name;
 	}
 
-	public ComplexType getType(String name) {
+	public ComplexType getType(String name) throws IllegalArgumentException{
 		for (ComplexType type : complexTypes)
 			if (type.getName().equals(name))
 				return type;

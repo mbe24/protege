@@ -49,6 +49,14 @@ public final class ElementUtil {
 	return e.getLength();
     }
     
+    public static boolean hasPrecedingLengthField(Element e) {
+	return hasLength(e) && getLength(e).getPrecedingLengthFieldSize() != null;
+    }
+    
+    public static int getPrecedingLengthFieldWidth(Element e) {
+	return getLength(e).getPrecedingLengthFieldSize();
+    }
+    
     public static boolean hasFixedLength(Element e) {
 	return hasLength(e) && getLength(e).getBit() != null;
     }

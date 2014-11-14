@@ -16,10 +16,13 @@
  */
 package org.beyene.protege.processor.util;
 
+import java.util.Arrays;
+
 import org.beyene.protege.core.ComplexType;
 import org.beyene.protege.core.Configuration;
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Protocol;
+import org.beyene.protege.core.Unit;
 import org.beyene.protege.core.data.DataUnit;
 import org.beyene.protege.core.data.Primitive;
 
@@ -80,5 +83,34 @@ public final class ProtocolUtil {
 	}
 	
 	return version;
+    }
+    
+    public static void addUnitInfo(DataUnit du, Protocol p, Element unitId) {
+	if (Primitive.forType(unitId.getType()) == Primitive.BYTES)
+	    throw new IllegalStateException(String.format("Type of unit id's value is %s instead of BYTE!", unitId.getType().name()));
+	    
+	byte[] id = ByteUtil.unbox(du.getPrimitiveValue(unitId.getId(), Primitive.BYTES));
+	for (Unit unit : p.getUnits().getUnits()) {
+	    byte[] currentId = unit.getKeyValue().getValue().getBytes();
+	    if (Arrays.equals(id, currentId)) {
+		du.setUnit(unit);
+		break;
+	    }
+	}
+    }
+    
+    public static Element getUnitIdElement(Protocol p) {
+	ComplexType header = p.getHeader();
+	Configuration config = header.getConfiguration();
+	
+	String unitId = config.getUnitId();
+	Element unitIdElement = null;
+	for(Element e :header.getElements())
+	    if (e.getId().equals(unitId)) {
+		unitIdElement = e;
+		break;
+	    }
+	
+	return unitIdElement;
     }
 }

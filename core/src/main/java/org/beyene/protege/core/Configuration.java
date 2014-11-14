@@ -19,11 +19,21 @@ package org.beyene.protege.core;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(name = "config", propOrder = { "totalLengthId", "versionId" })
+@XmlType(name = "config", propOrder = { "unitId", "totalLengthId", "versionId" })
 public class Configuration {
 
+    private String unitId;
     private String totalLengthId;
     private String versionId;
+
+    @XmlElement(name = "unit-id", required = true)
+    public String getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(String unitId) {
+        this.unitId = unitId;
+    }
 
     @XmlElement(name = "total-length-id")
     public String getTotalLengthId() {
