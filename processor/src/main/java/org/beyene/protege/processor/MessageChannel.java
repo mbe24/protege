@@ -87,6 +87,7 @@ public class MessageChannel implements AutoCloseable, Closeable, Channel {
     }
 
     public MessageChannel configureBlocking(boolean block) {
+	this.block = block;
 	return this;
     }
 
