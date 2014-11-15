@@ -49,6 +49,10 @@ public final class ProtocolUtil {
 	return bytes;
     }
 
+    public static boolean hasTotalLength(Protocol p) {
+	return p.getHeader().getConfiguration().getTotalLengthId() != null;
+    }
+    
     public static int getTotalLength(DataUnit du, Protocol p) {
 	ComplexType header = p.getHeader();
 	Configuration config = header.getConfiguration();
@@ -72,7 +76,7 @@ public final class ProtocolUtil {
 	Configuration config = header.getConfiguration();
 	
 	int version = -1;
-	if (config != null && config.getTotalLengthId() != null) {
+	if (config != null && config.getVersionId() != null) {
 	    try {
 		Long l = du.getPrimitiveValue(config.getVersionId(), Primitive.INTEGER);
 		if (l != null)

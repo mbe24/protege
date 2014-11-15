@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,21 +66,22 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 	elementsPerLevel.offerFirst(elements.size());
 
 	ListIterator<Element> it = elements.listIterator();
-	HeterogeneousContainer data = containerPerLevel.peekFirst();
 	while (it.hasNext()) {
 	    Element e = it.next();
-	    data = containerPerLevel.peekFirst();
+	    HeterogeneousContainer data = containerPerLevel.peekFirst();
+	    int elementsLeft = elementsPerLevel.peekFirst();
+
 	    
 	    // get #elements that are left to process for current level and
 	    // decrease value
-	    int elementsLeft = elementsPerLevel.pollFirst();
+	    elementsLeft = elementsPerLevel.pollFirst();
 	    elementsLeft--;
 	    elementsPerLevel.offerFirst(elementsLeft);
-
+	    
 	    // if no elements are left, go down a level in next loop
-	    if (elementsLeft == 0) {
+	    if (elementsLeft <= 0) {
 		containerPerLevel.pollFirst();
-		elementsLeft = elementsPerLevel.pollFirst();
+		elementsPerLevel.pollFirst();
 	    }
 	    
 	    // primitive
@@ -90,40 +93,34 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 	    else {
 		ComplexType ct = getComplexType(e.getClassification(), p, du.getUnit());
 
+		// TODO read occurrences from element if they are fix 
 		int occurrences = 1;
 		// check if there are multiple occurrences
 		if (ElementUtil.hasPrecedingLengthField(e)) {
 		    int width = ElementUtil.getPrecedingLengthFieldWidth(e);
 		    AtomProcessor<Long> ap = AtomProcessorFactory.getProcessor(Primitive.INTEGER);
 		    occurrences = ap.interpret(IoUtil.readBytes(width / 8, is), IntegerEncoding.UNSIGNED).intValue();
-		}
+		} else if (ElementUtil.hasFixedLength(e))
+		    occurrences = ElementUtil.getFixedLength(e);
 
 		int elementsAdded = addElements(e, ct, occurrences, it);
 		if (elementsAdded > 0) {
-		    /*
-		     * data container was removed due to elementsleft being null,
-		     * since elements got added, we put it back in
-		     */
-		    if (elementsLeft == 0) {
-			containerPerLevel.offerFirst(data);
+		    List<Composition> compositions = new ArrayList<>(occurrences);
+		    for (int i = 0; i < occurrences; i++) {
+			Composition c = new Composition();
+			c.setId(e.getId());
+			compositions.add(c);
+			data.addComplexObject(e.getId(), c);
 		    }
 		    
-		    elementsLeft = elementsPerLevel.pollFirst();
-		    elementsLeft += occurrences - 1;
-		    elementsPerLevel.offerFirst(elementsLeft);
-		    
-		    elementsPerLevel.offerFirst(elementsAdded);
-
-		    Composition nextLevelContainer = new Composition();
-		    nextLevelContainer.setId(e.getId());
-		    
-		    data.addComplexObject(e.getId(), nextLevelContainer);
-
-		    data = nextLevelContainer;
-		    containerPerLevel.offerFirst(data);
-		} else {
-		    // rather empty composition than null
-		    data.addComplexObject(e.getId(), new Composition());
+		    /*
+		     * reverse order, so that first composition is on top of stack
+		     */
+		    Collections.reverse(compositions);
+		    for (Composition c : compositions) {
+			containerPerLevel.offerFirst(c);
+			elementsPerLevel.offerFirst(ct.getElements().size());
+		    }
 		}
 	    }
 	}
@@ -131,48 +128,101 @@ public enum DefaultUnitProcessor implements UnitProcessor {
     }
 
     @Override
-    public int toStream(DataUnit du, Protocol p, OutputStream os)
-	    throws IOException {
-	// TODO Auto-generated method stub
-	return 0;
+    public int toStream(DataUnit du, Protocol p, OutputStream os) throws IOException {
+	List<Element> elements = new LinkedList<>(du.getUnit().getBody().getElements());
+
+	/*
+	 * stack that manages datacontainer per 'level', the level is increased
+	 * every time we encounter a complex type
+	 */
+	Deque<HeterogeneousContainer> containerPerLevel = new ArrayDeque<>();
+	containerPerLevel.offerFirst(du);
+
+	/*
+	 * stack that manages elements per level
+	 */
+	Deque<Integer> elementsPerLevel = new ArrayDeque<>();
+	elementsPerLevel.offerFirst(elements.size());
+
+	ListIterator<Element> it = elements.listIterator();
+	int bytesWritten = 0;
+	while (it.hasNext()) {
+	    Element e = it.next();
+	    HeterogeneousContainer data = containerPerLevel.peekFirst();
+	    int elementsLeft = elementsPerLevel.peekFirst();
+
+	    // get #elements that are left to process for current level and
+	    // decrease value
+	    elementsLeft = elementsPerLevel.pollFirst();
+	    elementsLeft--;
+	    elementsPerLevel.offerFirst(elementsLeft);
+	    
+	    // if no elements are left, go down a level in next loop
+	    if (elementsLeft <= 0) {
+		containerPerLevel.pollFirst();
+		elementsPerLevel.pollFirst();
+	    }
+
+	    // primitive
+	    if (e.getType() != null) {
+		Object value = data.getPrimitiveValue(e.getId(), Primitive.forType(e.getType()));
+		bytesWritten += ep.toStream(value, e, os);
+	    }
+	    // complex type
+	    else {
+		ComplexType ct = getComplexType(e.getClassification(), p, du.getUnit());
+		List<Composition> objects = data.getComplexCollection(e.getId());
+
+		int occurrences = objects.size();
+		// check if there are multiple occurrences
+		if (ElementUtil.hasPrecedingLengthField(e)) {
+		    int width = ElementUtil.getPrecedingLengthFieldWidth(e);
+		    AtomProcessor<Long> ap = AtomProcessorFactory.getProcessor(Primitive.INTEGER);
+		    byte[] bytes = ap.toBytes(Long.valueOf(occurrences), IntegerEncoding.UNSIGNED, width);
+		    bytesWritten += IoUtil.writeBytes(bytes, os);
+		} else if (ElementUtil.hasFixedLength(e)) {
+		    occurrences = ElementUtil.getFixedLength(e);
+		    // TODO error handling
+		}
+
+		int elementsAdded = addElements(e, ct, occurrences, it);
+		if (elementsAdded > 0) {
+		    List<Composition> compositions = data.getComplexCollection(e.getId());
+		    compositions.subList(0, occurrences);
+		    
+		    /*
+		     * reverse order, so that first composition is on top of stack
+		     */
+		    Collections.reverse(compositions);
+		    for (Composition c : compositions) {
+			containerPerLevel.offerFirst(c);
+			elementsPerLevel.offerFirst(ct.getElements().size());
+		    }
+		}
+	    }
+	}
+	return bytesWritten;
     }
 
-    // returns elements of complex type
     private int addElements(Element ce, ComplexType complexType, int occurrences, ListIterator<Element> it) {
-	Element cenp = new Element();
-	cenp.setClassification(ce.getClassification());
-	cenp.setId(ce.getId());
-	
-	// only add elements for new level...
 	List<Element> elements = complexType.getElements();
 	int added = 0;
-	if (occurrences > 0) {
+	for (int i = 0; i < occurrences; i++) {
 	    for (Element e : elements) {
 		it.add(e);
 		added++;
 	    }
 	}
-	
-	/*
-	 * the other occurrences of complex type are just added,
-	 * since they get their own level later own.
-	 * 
-	 * NOTE: element cenp is copy of ce, with length info removed
-	 */
-	for (int i = 0; i < occurrences - 1; i++) {
-	    it.add(cenp);
-	    added++;
-	}
-	    
-	
+
 	// reset iterator position
 	for (int i = 0; i < added; i++)
 	    it.previous();
 
-	return elements.size();
+	return added;
     }
 
-    private ComplexType getComplexType(String name, Protocol p, Unit u) throws IllegalArgumentException {
+    private ComplexType getComplexType(String name, Protocol p, Unit u)
+	    throws IllegalArgumentException {
 	if (u.getComplexTypes() != null)
 	    for (ComplexType ct : u.getComplexTypes())
 		if (name.equals(ct.getName()))

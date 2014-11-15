@@ -72,8 +72,7 @@ public class DefaultHeaderProcessor implements HeaderProcessor {
 
 	int bytesWritten = 0;
 	for (Element e : header.getElements()) {
-	    Object value = du.getPrimitiveValue(e.getId(),
-		    Primitive.forType(e.getType()));
+	    Object value = du.getPrimitiveValue(e.getId(), Primitive.forType(e.getType()));
 	    bytesWritten += ep.toStream(value, e, os);
 	}
 	return bytesWritten;

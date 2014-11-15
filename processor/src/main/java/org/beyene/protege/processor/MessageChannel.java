@@ -16,8 +16,11 @@
  */
 package org.beyene.protege.processor;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.Channel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -27,50 +30,64 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.data.DataUnit;
 
-public class InputReader implements AutoCloseable {
+public class MessageChannel implements AutoCloseable, Closeable, Channel {
 
+    private final MessageChannelWorker delegate;
     private final InputStream is;
-    private final SocketListener delegate;
 
     private final ExecutorService executor;
     private final ConcurrentLinkedQueue<DataUnit> queue = new ConcurrentLinkedQueue<>();
 
     private CountDownLatch ready;
     private final AtomicBoolean hasException = new AtomicBoolean();
+    
+    private boolean block;
+    private boolean open = true;
 
-    private InputReader(InputStream is, Protocol p) {
+    private MessageChannel(Protocol p, InputStream is, OutputStream os) {
 	this.is = is;
-
-	this.delegate = new SocketListener(this, is, p);
+	this.delegate = new MessageChannelWorker(this, is, os, p);
 	this.executor = Executors.newFixedThreadPool(1);
 	executor.submit(delegate);
 
 	this.ready = new CountDownLatch(1);
+	this.block = true;
     }
 
-    public static InputReader from(InputStream is, Protocol p) {
-	return new InputReader(is, p);
+    public static MessageChannel from(Protocol p, InputStream is, OutputStream os) {
+	return new MessageChannel(p, is, os);
     }
 
     public DataUnit read() throws IOException {
-	try {
-	    ready.await();
-	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	if (block) {
+	    try {
+		ready.await();
+	    } catch (InterruptedException e) {
+		e.printStackTrace();
+	    }
 	}
-
+	
 	if (hasException.get())
 	    rethrowException();
 
 	this.ready = new CountDownLatch(1);
 	return queue.poll();
     }
+    
+    public void write(DataUnit object) throws IOException {
+	delegate.write(object);
+    }
 
     @Override
     public void close() throws IOException {
+	open = false;
 	delegate.close();
 	is.close();
 	executor.shutdown();
+    }
+
+    public MessageChannel configureBlocking(boolean block) {
+	return this;
     }
 
     private void rethrowException() throws IOException {
@@ -90,5 +107,10 @@ public class InputReader implements AutoCloseable {
     void supply(DataUnit data) {
 	ready.countDown();
 	queue.add(data);
+    }
+
+    @Override
+    public boolean isOpen() {
+	return open;
     }
 }

@@ -17,6 +17,7 @@
 package org.beyene.protege.processor.protocol;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Iterator;
 
 import org.beyene.protege.core.Protocol;
@@ -46,14 +47,80 @@ public class DefaultUnitProcessorTest {
 	Assert.assertNotNull(reponse);
 	
 	du.setUnit(reponse);
+
+	byte[] bytes = createHelloResponseBody();
+	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+	du = up.fromStream(du, p, is);
 	
+	Double averageAge = du.getPrimitiveValue("average-age", Primitive.DOUBLE);
+	Assert.assertNotNull(averageAge);
+	Assert.assertEquals(32.125d, averageAge, 0.00001);
+	
+	Iterator<Composition> personIt = du.getComplexCollection("persons").iterator();
+	Composition personMax = personIt.next();
+	Composition personJohn = personIt.next();
+	Assert.assertEquals(2, du.getComplexCollection("persons").size());
+	
+	Assert.assertEquals("Max", personMax.getPrimitiveValue("first-name", Primitive.STRING));
+	Assert.assertEquals("Mustermann", personMax.getPrimitiveValue("last-name", Primitive.STRING));
+	Assert.assertEquals("M", personMax.getPrimitiveValue("gender", Primitive.STRING));
+	
+	Assert.assertEquals("John", personJohn.getPrimitiveValue("first-name", Primitive.STRING));
+	Assert.assertEquals("Doe", personJohn.getPrimitiveValue("last-name", Primitive.STRING));
+	Assert.assertEquals("M", personJohn.getPrimitiveValue("gender", Primitive.STRING));
+    }
+
+    @Test
+    public void testToStream() throws Exception {
+	Protocol p = HelloProtocol.get();
+	DataUnit du = new DataUnit();
+	Unit reponse = null;
+	for(Unit u : p.getUnits().getUnits())
+	   if (u.getName().equals("hello-response"))
+	       reponse = u;
+	Assert.assertNotNull(reponse);
+	du.setUnit(reponse);
+	DataUnit header = new DataUnit();
+	header.setUnit(reponse);
+
+	byte[] bytes = createHelloResponseBody();
+	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+	du = up.fromStream(du, p, is);
+	
+	// create data unit
+	ByteArrayOutputStream os = new ByteArrayOutputStream();
+	int bytesWritten = up.toStream(du, p, os);
+	Assert.assertEquals(bytes.length, bytesWritten);
+	
+	is = new ByteArrayInputStream(os.toByteArray());
+	DataUnit result = up.fromStream(header, p, is);
+	
+	Double averageAge = result.getPrimitiveValue("average-age", Primitive.DOUBLE);
+	Assert.assertNotNull(averageAge);
+	Assert.assertEquals(32.125d, averageAge, 0.00001);
+	
+	Iterator<Composition> personIt = result.getComplexCollection("persons").iterator();
+	Composition personMax = personIt.next();
+	Composition personJohn = personIt.next();
+	Assert.assertEquals(2, result.getComplexCollection("persons").size());
+	
+	Assert.assertEquals("Max", personMax.getPrimitiveValue("first-name", Primitive.STRING));
+	Assert.assertEquals("Mustermann", personMax.getPrimitiveValue("last-name", Primitive.STRING));
+	Assert.assertEquals("M", personMax.getPrimitiveValue("gender", Primitive.STRING));
+	
+	Assert.assertEquals("John", personJohn.getPrimitiveValue("first-name", Primitive.STRING));
+	Assert.assertEquals("Doe", personJohn.getPrimitiveValue("last-name", Primitive.STRING));
+	Assert.assertEquals("M", personJohn.getPrimitiveValue("gender", Primitive.STRING));
+    }
+    
+    static byte[] createHelloResponseBody() {
 	StringBuilder sb = new StringBuilder();
 	// occurrences of person, integer
 	sb.append("02");
 	
 	// ----------------------
 	
-	// person 1
+	// person 1, max mustermann
 	
 	// first name length
 	sb.append("18");
@@ -72,7 +139,7 @@ public class DefaultUnitProcessorTest {
 	
 	// ----------------------
 	
-	// person 2
+	// person 2, john doe
 	
 	// first name length
 	sb.append("20");
@@ -93,25 +160,6 @@ public class DefaultUnitProcessorTest {
 	
 	// average-age, double 32.125
 	sb.append("4040100000000000");
-
-	byte[] bytes = ByteUtil.toByteArray(sb.toString());
-	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	du = up.fromStream(du, p, is);
-	
-	Double averageAge = du.getPrimitiveValue("average-age", Primitive.DOUBLE);
-	Assert.assertNotNull(averageAge);
-	Assert.assertEquals(32.125d, averageAge, 0.00001);
-	
-	Iterator<Composition> personIt = du.getComplexCollection("persons").iterator();
-	Composition personMax = personIt.next();
-	Composition personJohn = personIt.next();
-	
-	Assert.assertEquals("Max", personMax.getPrimitiveValue("first-name", Primitive.STRING));
-	Assert.assertEquals("Mustermann", personMax.getPrimitiveValue("last-name", Primitive.STRING));
-	Assert.assertEquals("M", personMax.getPrimitiveValue("gender", Primitive.STRING));
-	
-	Assert.assertEquals("John", personJohn.getPrimitiveValue("first-name", Primitive.STRING));
-	Assert.assertEquals("Doe", personJohn.getPrimitiveValue("last-name", Primitive.STRING));
-	Assert.assertEquals("M", personJohn.getPrimitiveValue("gender", Primitive.STRING));
+	return ByteUtil.toByteArray(sb.toString());
     }
 }

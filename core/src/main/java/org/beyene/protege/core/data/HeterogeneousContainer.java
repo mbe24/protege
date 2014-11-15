@@ -16,7 +16,7 @@
  */
 package org.beyene.protege.core.data;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.beyene.protege.core.Type;
 
@@ -28,5 +28,5 @@ public interface HeterogeneousContainer {
     
     public boolean addComplexObject(String id, Composition c);
     
-    public Collection<Composition> getComplexCollection(String id); 
+    public List<Composition> getComplexCollection(String id); 
 }

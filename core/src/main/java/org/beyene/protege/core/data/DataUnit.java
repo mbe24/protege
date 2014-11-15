@@ -16,7 +16,7 @@
  */
 package org.beyene.protege.core.data;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.beyene.protege.core.Type;
 import org.beyene.protege.core.Unit;
@@ -50,7 +50,7 @@ public class DataUnit implements HeterogeneousContainer {
     }
 
     @Override
-    public Collection<Composition> getComplexCollection(String id) {
+    public List<Composition> getComplexCollection(String id) {
 	return delegate.getComplexCollection(id);
     }
 }

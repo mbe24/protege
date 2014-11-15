@@ -17,8 +17,8 @@
 package org.beyene.protege.core.data;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.beyene.protege.core.Type;
@@ -26,8 +26,7 @@ import org.beyene.protege.core.Type;
 public class DataBroker implements HeterogeneousContainer {
 
     private final Map<Type, Map<String, Object>> primitives = new HashMap<>();
-    private final Map<String, Composition> complexObjects = new HashMap<>();
-    private final Map<String, Collection<Composition>> complexCollections = new HashMap<>();
+    private final Map<String, List<Composition>> complexCollections = new HashMap<>();
 
     {
 	for (Type type : Type.values())
@@ -52,8 +51,7 @@ public class DataBroker implements HeterogeneousContainer {
     }
 
     @Override
-    public <T> T getPrimitiveValue(String id, Primitive<T> primitive)
-	    throws IllegalArgumentException {
+    public <T> T getPrimitiveValue(String id, Primitive<T> primitive) throws IllegalArgumentException {
 	Map<String, Object> typeMap = primitives
 		.get(primitive.getMappingType());
 	if (!typeMap.containsKey(id))
@@ -75,21 +73,8 @@ public class DataBroker implements HeterogeneousContainer {
 
 	if (complexCollections.containsKey(id)) {
 	    complexCollections.get(id).add(c);
-	}
-	/*
-	 * no mapping for single composition means its either a list element or
-	 * single element
-	 */
-	else if (!complexObjects.containsKey(id)) {
-	    complexObjects.put(id, c);
-	}
-	else {
-	    /*
-	     * if there already is a mapping, composition gets added to a list
-	     */
-	    Collection<Composition> list = new ArrayList<>();
-	    Composition toBeAdded = complexObjects.remove(id);
-	    list.add(toBeAdded);
+	} else {
+	    List<Composition> list = new ArrayList<>();
 	    list.add(c);
 	    complexCollections.put(id, list);
 	}
@@ -111,7 +96,7 @@ public class DataBroker implements HeterogeneousContainer {
     // }
 
     @Override
-    public Collection<Composition> getComplexCollection(String id) {
+    public List<Composition> getComplexCollection(String id) {
 	return complexCollections.get(id);
     }
 }
