@@ -18,6 +18,7 @@ package org.beyene.protege.processor.element;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.channels.Channels;
 
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Type;
@@ -37,46 +38,46 @@ public class ByteElementProcessorTest {
     private static final ByteElementProcessor ep = ByteElementProcessor.INSTANCE;
     
     @Test
-    public void testFromStream() throws Exception {
-	Element e = new Element();
-	e.setType(Type.BYTE);
-	Value v = new Value();
-	v.setHex("DEADBEEF");
-	e.setValue(v);
-	
-	// read expected value
-	byte[] bytes = v.getBytes();
-	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	Byte[] result = ep.fromStream(e, is);
-	Assert.assertArrayEquals(bytes, ByteUtil.unbox(result));
-	
-	// read unexpected value
-	thrown.expect(DataMismatchException.class);
-	is = new ByteArrayInputStream(ByteUtil.toByteArray("BEEFDEAD"));
-	ep.fromStream(e, is);
-	
-    }
+        public void testRead() throws Exception {
+    	Element e = new Element();
+    	e.setType(Type.BYTE);
+    	Value v = new Value();
+    	v.setHex("DEADBEEF");
+    	e.setValue(v);
+    	
+    	// read expected value
+    	byte[] bytes = v.getBytes();
+    	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+    	Byte[] result = ep.read(e, Channels.newChannel(is));
+    	Assert.assertArrayEquals(bytes, ByteUtil.unbox(result));
+    	
+    	// read unexpected value
+    	thrown.expect(DataMismatchException.class);
+    	is = new ByteArrayInputStream(ByteUtil.toByteArray("BEEFDEAD"));
+    	ep.read(e, Channels.newChannel(is));
+    	
+        }
 
     @Test
-    public void testToStream() throws Exception {
-	Element e = new Element();
-	e.setType(Type.BYTE);
-	Value v = new Value();
-	v.setHex("DEADBEEF");
-	e.setValue(v);
-	
-	// write expected value
-	ByteArrayOutputStream os = new ByteArrayOutputStream();
-	int length = ep.toStream(null, e, os);
-	Assert.assertEquals(4, length);
-	
-	ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
-	byte[] result = ByteUtil.unbox(ep.fromStream(e, is));
-	Assert.assertArrayEquals(v.getBytes(), result);
-	
-	// write unexpected value
-	thrown.expect(DataMismatchException.class);
-	os = new ByteArrayOutputStream();
-	ep.toStream(ByteUtil.box(ByteUtil.toByteArray("BEEFDEAD")), e, os);
-    }
+        public void testWrite() throws Exception {
+    	Element e = new Element();
+    	e.setType(Type.BYTE);
+    	Value v = new Value();
+    	v.setHex("DEADBEEF");
+    	e.setValue(v);
+    	
+    	// write expected value
+    	ByteArrayOutputStream os = new ByteArrayOutputStream();
+    	int length = ep.write(null, e, Channels.newChannel(os));
+    	Assert.assertEquals(4, length);
+    	
+    	ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+    	byte[] result = ByteUtil.unbox(ep.read(e, Channels.newChannel(is)));
+    	Assert.assertArrayEquals(v.getBytes(), result);
+    	
+    	// write unexpected value
+    	thrown.expect(DataMismatchException.class);
+    	os = new ByteArrayOutputStream();
+    	ep.write(ByteUtil.box(ByteUtil.toByteArray("BEEFDEAD")), e, Channels.newChannel(os));
+        }
 }

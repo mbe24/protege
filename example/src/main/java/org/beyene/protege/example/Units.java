@@ -14,7 +14,7 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.example.test;
+package org.beyene.protege.example;
 
 import java.util.Arrays;
 

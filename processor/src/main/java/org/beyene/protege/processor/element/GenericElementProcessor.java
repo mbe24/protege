@@ -17,8 +17,8 @@
 package org.beyene.protege.processor.element;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 
@@ -27,7 +27,7 @@ public enum GenericElementProcessor implements ElementProcessor<Object> {
     INSTANCE;
 
     @Override
-    public Object fromStream(Element e, InputStream is) throws IOException {
+    public Object read(Element e, ReadableByteChannel channel) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
 
 	// if number of types does not increase, this default case can never be
@@ -35,17 +35,17 @@ public enum GenericElementProcessor implements ElementProcessor<Object> {
 	if (ep == null)
 	    throw new IllegalStateException();
 
-	return ep.fromStream(e, is);
+	return ep.read(e, channel);
     }
 
     @Override
-    public int toStream(Object object, Element e, OutputStream os) throws IOException {
+    public int write(Object object, Element e, WritableByteChannel channel) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
 
 	// if number of types does not increase, this default case can never be
 	// reached.
 	if (ep == null)
 	    throw new IllegalStateException();
-	return ep.toStream(object, e, os);
+	return ep.write(object, e, channel);
     }
 }

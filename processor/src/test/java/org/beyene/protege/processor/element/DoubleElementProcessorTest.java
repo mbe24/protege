@@ -19,6 +19,7 @@ package org.beyene.protege.processor.element;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,50 +36,50 @@ public class DoubleElementProcessorTest {
     private static final DoubleElementProcessor ep = DoubleElementProcessor.INSTANCE;
 
     @Test
-    public void testFromStream() throws Exception {
-	double d1 = 64.5;
-	String s1 = "4050200000000000";
-	String s1n = "C050200000000000";
-
-	Map<Double, String> results = new HashMap<>();
-	results.put(d1, s1);
-	results.put(-d1, s1n);
-
-	Element e = new Element();
-	e.setType(Type.DOUBLE);
-	e.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
-
-	for (Entry<Double, String> entry : results.entrySet()) {
-	    String hex = entry.getValue();
-	    InputStream is = new ByteArrayInputStream(ByteUtil.toByteArray(hex));
-	    Double result = ep.fromStream(e, is);
-	    Assert.assertEquals(entry.getKey().longValue(), result.longValue());
-	}
-    }
+        public void testRead() throws Exception {
+    	double d1 = 64.5;
+    	String s1 = "4050200000000000";
+    	String s1n = "C050200000000000";
+    
+    	Map<Double, String> results = new HashMap<>();
+    	results.put(d1, s1);
+    	results.put(-d1, s1n);
+    
+    	Element e = new Element();
+    	e.setType(Type.DOUBLE);
+    	e.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
+    
+    	for (Entry<Double, String> entry : results.entrySet()) {
+    	    String hex = entry.getValue();
+    	    InputStream is = new ByteArrayInputStream(ByteUtil.toByteArray(hex));
+    	    Double result = ep.read(e, Channels.newChannel(is));
+    	    Assert.assertEquals(entry.getKey().longValue(), result.longValue());
+    	}
+        }
 
     @Test
-    public void testToStream() throws Exception {
-	double d1 = 64.5;
-	String s1 = "4050200000000000";
-	String s1n = "C050200000000000";
-
-	Map<Double, String> results = new HashMap<>();
-	results.put(d1, s1);
-	results.put(-d1, s1n);
-
-	Element e = new Element();
-	e.setType(Type.DOUBLE);
-	e.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
-
-	for (Entry<Double, String> entry : results.entrySet()) {
-	    Double val = entry.getKey();
-	    ByteArrayOutputStream os = new ByteArrayOutputStream();
-	    int written = ep.toStream(val, e, os);
-	    Assert.assertEquals(DoubleEncoding.IEEE_754_DOUBLE.getWidth() / 8, written);
-	    
-	    InputStream is = new ByteArrayInputStream(os.toByteArray());
-	    Double result = ep.fromStream(e, is);
-	    Assert.assertEquals(val.longValue(), result.longValue());
-	}
-    }
+        public void testWrite() throws Exception {
+    	double d1 = 64.5;
+    	String s1 = "4050200000000000";
+    	String s1n = "C050200000000000";
+    
+    	Map<Double, String> results = new HashMap<>();
+    	results.put(d1, s1);
+    	results.put(-d1, s1n);
+    
+    	Element e = new Element();
+    	e.setType(Type.DOUBLE);
+    	e.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
+    
+    	for (Entry<Double, String> entry : results.entrySet()) {
+    	    Double val = entry.getKey();
+    	    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    	    int written = ep.write(val, e, Channels.newChannel(os));
+    	    Assert.assertEquals(DoubleEncoding.IEEE_754_DOUBLE.getWidth() / 8, written);
+    	    
+    	    InputStream is = new ByteArrayInputStream(os.toByteArray());
+    	    Double result = ep.read(e, Channels.newChannel(is));
+    	    Assert.assertEquals(val.longValue(), result.longValue());
+    	}
+        }
 }

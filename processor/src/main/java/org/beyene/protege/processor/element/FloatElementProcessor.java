@@ -19,8 +19,8 @@ package org.beyene.protege.processor.element;
 import static org.beyene.protege.processor.atom.AtomProcessorFactory.getProcessor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.data.Primitive;
@@ -33,20 +33,20 @@ enum FloatElementProcessor implements ElementProcessor<Float> {
     INSTANCE;
     
     @Override
-    public Float fromStream(Element e, InputStream is) throws IOException {
-	int length = LengthProcessor.INSTANCE.fromStream(e, is);
+    public Float read(Element e, ReadableByteChannel channel) throws IOException {
+	int length = LengthProcessor.INSTANCE.read(e, channel);
 	// if classification == null then set to default encoding
 	String classification = e.getClassification();
 	Encoding<Float> encoding = Classifications.get(classification, Primitive.FLOAT);
-	return getProcessor(Primitive.FLOAT).interpret(IoUtil.readBytes(length / 8, is), encoding);
+	return getProcessor(Primitive.FLOAT).interpret(IoUtil.readBytes(length / 8, channel), encoding);
     }
 
     @Override
-    public int toStream(Float object, Element e, OutputStream os) throws IOException {
+    public int write(Float object, Element e, WritableByteChannel channel) throws IOException {
 	String classification = e.getClassification();
 	Encoding<Float> encoding = Classifications.get(classification, Primitive.FLOAT);
-	int length = LengthProcessor.INSTANCE.toStream(-1, e, os);
+	int length = LengthProcessor.INSTANCE.write(-1, e, channel);
 	byte[] bytes = getProcessor(Primitive.FLOAT).toBytes(object, encoding, length);
-	return IoUtil.writeBytes(bytes, length / 8, os);
+	return IoUtil.writeBytes(bytes, channel);
     }
 }

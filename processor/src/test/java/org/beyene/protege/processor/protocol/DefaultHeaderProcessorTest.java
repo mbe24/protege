@@ -18,6 +18,7 @@ package org.beyene.protege.processor.protocol;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.channels.Channels;
 
 import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.Type;
@@ -35,68 +36,68 @@ public class DefaultHeaderProcessorTest {
     private DefaultHeaderProcessor hp;
 
     @Test
-    public void testFromStream() throws Exception {
-	Protocol p = HelloProtocol.get();
-	hp = new DefaultHeaderProcessor(p);
-	
-	StringBuilder sb = new StringBuilder();
-	// header, byte
-	sb.append("DEADBEEF");
-
-	// version, integer
-	sb.append("01");
-
-	// total length = 50, integer
-	sb.append("32");
-
-	// unit id, byte
-	sb.append("01");
-
-	byte[] bytes = ByteUtil.toByteArray(sb.toString());
-	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	DataUnit du = hp.fromStream(p, is);
-	
-	int totalLength = ProtocolUtil.getTotalLength(du, p);
-	Assert.assertEquals(50, totalLength);
-	
-	byte[] mark = ByteUtil.unbox(du.getPrimitiveValue("header-mark", Primitive.BYTES));
-	Assert.assertArrayEquals(ByteUtil.toByteArray("DEADBEEF"), mark);
-	
-	Unit unit = du.getUnit();
-	Assert.assertNotNull(unit);
-	Assert.assertEquals("hello-response", unit.getName());
-    }
+        public void testRead() throws Exception {
+    	Protocol p = HelloProtocol.get();
+    	hp = new DefaultHeaderProcessor(p);
+    	
+    	StringBuilder sb = new StringBuilder();
+    	// header, byte
+    	sb.append("DEADBEEF");
+    
+    	// version, integer
+    	sb.append("01");
+    
+    	// total length = 50, integer
+    	sb.append("32");
+    
+    	// unit id, byte
+    	sb.append("01");
+    
+    	byte[] bytes = ByteUtil.toByteArray(sb.toString());
+    	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+    	DataUnit du = hp.read(p, Channels.newChannel(is));
+    	
+    	int totalLength = ProtocolUtil.getTotalLength(du, p);
+    	Assert.assertEquals(50, totalLength);
+    	
+    	byte[] mark = ByteUtil.unbox(du.getPrimitiveValue("header-mark", Primitive.BYTES));
+    	Assert.assertArrayEquals(ByteUtil.toByteArray("DEADBEEF"), mark);
+    	
+    	Unit unit = du.getUnit();
+    	Assert.assertNotNull(unit);
+    	Assert.assertEquals("hello-response", unit.getName());
+        }
 
     @Test
-    public void testToStream() throws Exception {
-	Protocol p = HelloProtocol.get();
-	hp = new DefaultHeaderProcessor(p);
-	
-	StringBuilder sb = new StringBuilder();
-	// header, byte
-	sb.append("DEADBEEF");
-
-	// version, integer
-	sb.append("01");
-
-	// total length = 50, integer
-	sb.append("32");
-
-	// unit id, byte
-	sb.append("01");
-	
-	byte[] bytes = ByteUtil.toByteArray(sb.toString());
-	
-	DataUnit du = new DataUnit();
-	du.addPrimitiveValue("version", Type.INTEGER, Long.valueOf(1));
-	du.addPrimitiveValue("total-length", Type.INTEGER, Long.valueOf(50));
-	du.addPrimitiveValue("unit-id", Type.BYTE, new Byte[] {(byte) 0x01});
-	
-	ByteArrayOutputStream os = new ByteArrayOutputStream();
-	int written = hp.toStream(du, p, os);
-	Assert.assertEquals(bytes.length, written);
-	
-	byte[] result = os.toByteArray();
-	Assert.assertArrayEquals(bytes, result);
-    }
+        public void testWrite() throws Exception {
+    	Protocol p = HelloProtocol.get();
+    	hp = new DefaultHeaderProcessor(p);
+    	
+    	StringBuilder sb = new StringBuilder();
+    	// header, byte
+    	sb.append("DEADBEEF");
+    
+    	// version, integer
+    	sb.append("01");
+    
+    	// total length = 50, integer
+    	sb.append("32");
+    
+    	// unit id, byte
+    	sb.append("01");
+    	
+    	byte[] bytes = ByteUtil.toByteArray(sb.toString());
+    	
+    	DataUnit du = new DataUnit();
+    	du.addPrimitiveValue("version", Type.INTEGER, Long.valueOf(1));
+    	du.addPrimitiveValue("total-length", Type.INTEGER, Long.valueOf(50));
+    	du.addPrimitiveValue("unit-id", Type.BYTE, new Byte[] {(byte) 0x01});
+    	
+    	ByteArrayOutputStream os = new ByteArrayOutputStream();
+    	int written = hp.write(du, p, Channels.newChannel(os));
+    	Assert.assertEquals(bytes.length, written);
+    	
+    	byte[] result = os.toByteArray();
+    	Assert.assertArrayEquals(bytes, result);
+        }
 }

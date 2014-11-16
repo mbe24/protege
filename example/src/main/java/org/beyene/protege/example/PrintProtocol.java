@@ -14,18 +14,23 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.protocol;
+package org.beyene.protege.example;
 
-import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.beyene.protege.core.Protocol;
-import org.beyene.protege.core.data.DataUnit;
 
-public interface MessageProcessor {
-    
-	public DataUnit read(Protocol p, ReadableByteChannel channel) throws IOException;
-	
-	public int write(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException;
+public class PrintProtocol {
+
+    public static void main(String[] args) throws JAXBException {
+	Protocol p = Units.getProtocol();
+
+	JAXBContext context = JAXBContext.newInstance(Protocol.class);
+	Marshaller marshaller = context.createMarshaller();
+	marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+	marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+	marshaller.marshal(p, System.out);
+    }
 }

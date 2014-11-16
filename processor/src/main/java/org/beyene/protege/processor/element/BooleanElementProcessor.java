@@ -17,8 +17,8 @@
 package org.beyene.protege.processor.element;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 
@@ -27,7 +27,7 @@ enum BooleanElementProcessor implements ElementProcessor<Boolean> {
     INSTANCE;
     
     @Override
-    public Boolean fromStream(Element e, InputStream is) throws IOException {
+    public Boolean read(Element e,  ReadableByteChannel channel) throws IOException {
 //	int length = LengthProcessor.INSTANCE.fromStream(e, is);
 	// TODO use int processor and mapping
 //	return getProcessor(Primitive.BOOLEAN).interpret(IoUtil.readBytes(length, is), null);
@@ -35,7 +35,7 @@ enum BooleanElementProcessor implements ElementProcessor<Boolean> {
     }
 
     @Override
-    public int toStream(Boolean object, Element e, OutputStream os) throws IOException {
+    public int write(Boolean object, Element e, WritableByteChannel channel) throws IOException {
 		return 0;
 	// TODO Auto-generated method stub
     }

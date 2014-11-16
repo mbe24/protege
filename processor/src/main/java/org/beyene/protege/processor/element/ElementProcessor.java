@@ -17,14 +17,14 @@
 package org.beyene.protege.processor.element;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 
 public interface ElementProcessor<T> {
 
-	public T fromStream(Element e, InputStream is) throws IOException;
+	public T read(Element e, ReadableByteChannel channel) throws IOException;
 	
-	public int toStream(T object, Element e, OutputStream os) throws IOException;
+	public int write(T object, Element e, WritableByteChannel channel) throws IOException;
 }

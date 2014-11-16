@@ -17,8 +17,8 @@
 package org.beyene.protege.processor.protocol;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,12 +52,12 @@ public class DefaultHeaderProcessor implements HeaderProcessor {
     }
 
     @Override
-    public DataUnit fromStream(Protocol p, InputStream is) throws IOException {
+    public DataUnit read(Protocol p, ReadableByteChannel channel) throws IOException {
 	ComplexType header = p.getHeader();
 
 	DataUnit du = new DataUnit();
 	for (Element e : header.getElements()) {
-	    Object value = ep.fromStream(e, is);
+	    Object value = ep.read(e, channel);
 	    du.addPrimitiveValue(e.getId(), e.getType(), value);
 	}
 	
@@ -67,13 +67,13 @@ public class DefaultHeaderProcessor implements HeaderProcessor {
     }
 
     @Override
-    public int toStream(DataUnit du, Protocol p, OutputStream os) throws IOException {
+    public int write(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException {
 	ComplexType header = p.getHeader();
 
 	int bytesWritten = 0;
 	for (Element e : header.getElements()) {
 	    Object value = du.getPrimitiveValue(e.getId(), Primitive.forType(e.getType()));
-	    bytesWritten += ep.toStream(value, e, os);
+	    bytesWritten += ep.write(value, e, channel);
 	}
 	return bytesWritten;
     }

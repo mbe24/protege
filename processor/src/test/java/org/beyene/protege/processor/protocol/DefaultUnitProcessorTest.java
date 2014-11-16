@@ -18,6 +18,7 @@ package org.beyene.protege.processor.protocol;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.channels.Channels;
 import java.util.Iterator;
 
 import org.beyene.protege.core.Protocol;
@@ -50,7 +51,7 @@ public class DefaultUnitProcessorTest {
 
 	byte[] bytes = createHelloResponseBody();
 	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	du = up.fromStream(du, p, is);
+	du = up.fromStream(du, p, Channels.newChannel(is));
 	
 	Double averageAge = du.getPrimitiveValue("average-age", Primitive.DOUBLE);
 	Assert.assertNotNull(averageAge);
@@ -85,15 +86,15 @@ public class DefaultUnitProcessorTest {
 
 	byte[] bytes = createHelloResponseBody();
 	ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-	du = up.fromStream(du, p, is);
+	du = up.fromStream(du, p, Channels.newChannel(is));
 	
 	// create data unit
 	ByteArrayOutputStream os = new ByteArrayOutputStream();
-	int bytesWritten = up.toStream(du, p, os);
+	int bytesWritten = up.toStream(du, p, Channels.newChannel(os));
 	Assert.assertEquals(bytes.length, bytesWritten);
 	
 	is = new ByteArrayInputStream(os.toByteArray());
-	DataUnit result = up.fromStream(header, p, is);
+	DataUnit result = up.fromStream(header, p, Channels.newChannel(is));
 	
 	Double averageAge = result.getPrimitiveValue("average-age", Primitive.DOUBLE);
 	Assert.assertNotNull(averageAge);

@@ -17,8 +17,7 @@
 package org.beyene.protege.processor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ByteChannel;
 import java.util.concurrent.Callable;
 
 import org.beyene.protege.core.Protocol;
@@ -28,11 +27,10 @@ import org.beyene.protege.processor.protocol.MessageProcessor;
 
 final class MessageChannelWorker implements Callable<Void>, AutoCloseable {
 
-    private final MessageChannel channel;
+    private final MessageChannel messageChannel;
     private final Protocol p;
     
-    private final InputStream is;
-    private final OutputStream os;
+    private final ByteChannel byteChannel;
 
     private final MessageProcessor mp;
     
@@ -41,25 +39,24 @@ final class MessageChannelWorker implements Callable<Void>, AutoCloseable {
     // exceptions
     private IOException ioe;
 
-    public MessageChannelWorker(MessageChannel channel, InputStream is, OutputStream os, Protocol p) {
-	this.channel = channel;
+    public MessageChannelWorker(MessageChannel messageChannel, ByteChannel byteChannel, Protocol p) {
+	this.messageChannel = messageChannel;
 	this.p = p;
 	this.mp = new DefaultMessageProcessor(p);
 	
-	this.is = is;
-	this.os = os;
+	this.byteChannel = byteChannel;
     }
 
     @Override
     public Void call() {
 	try {
 	    while (online) {
-		DataUnit dataUnit = mp.fromStream(p, is);
-		channel.supply(dataUnit);
+		DataUnit dataUnit = mp.read(p, byteChannel);
+		messageChannel.supply(dataUnit);
 	    }
 	} catch (IOException e) {
 	    ioe = e;
-	    channel.setException();
+	    messageChannel.setException();
 	}
 	return null;
     }
@@ -69,11 +66,12 @@ final class MessageChannelWorker implements Callable<Void>, AutoCloseable {
     }
 
     public int write(DataUnit object) throws IOException {
-	return mp.toStream(object, p, os);
+	return mp.write(object, p, byteChannel);
     }
     
     @Override
-    public void close() {
+    public void close() throws IOException {
+	byteChannel.close();
 	online = false;
     }
 }

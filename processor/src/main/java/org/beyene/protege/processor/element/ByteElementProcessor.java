@@ -19,8 +19,8 @@ package org.beyene.protege.processor.element;
 import static org.beyene.protege.processor.atom.AtomProcessorFactory.getProcessor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.Arrays;
 
 import org.beyene.protege.core.Element;
@@ -35,9 +35,9 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
     INSTANCE;
 
     @Override
-    public Byte[] fromStream(Element e, InputStream is) throws IOException {
-	int length = LengthProcessor.INSTANCE.fromStream(e, is);
-	byte[] bytes = IoUtil.readBytes(length / 8, is);
+    public Byte[] read(Element e, ReadableByteChannel channel) throws IOException {
+	int length = LengthProcessor.INSTANCE.read(e, channel);
+	byte[] bytes = IoUtil.readBytes(length / 8, channel);
 
 	if (ElementUtil.hasValue(e)) {
 	    Value value = ElementUtil.getValue(e);
@@ -49,9 +49,9 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
     }
 
     @Override
-    public int toStream(Byte[] object, Element e, OutputStream os) throws IOException {
+    public int write(Byte[] object, Element e, WritableByteChannel channel) throws IOException {
 	int l = (object == null) ? 0 : object.length * 8;
-	int length = LengthProcessor.INSTANCE.toStream(l, e, os);
+	int length = LengthProcessor.INSTANCE.write(l, e, channel);
 	byte[] bytes;
 	if (ElementUtil.hasValue(e)) {
 	    Value value = ElementUtil.getValue(e);
@@ -65,6 +65,6 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
 	} else
 	    bytes = getProcessor(Primitive.BYTES).toBytes(object, null, length);
 
-	return IoUtil.writeBytes(bytes, length / 8, os) + ElementUtil.precedingLengthWritten(e);
+	return IoUtil.writeBytes(bytes, channel) + ElementUtil.precedingLengthWritten(e);
     }
 }

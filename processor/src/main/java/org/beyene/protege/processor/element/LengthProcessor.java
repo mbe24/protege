@@ -19,8 +19,8 @@ package org.beyene.protege.processor.element;
 import static org.beyene.protege.processor.atom.AtomProcessorFactory.getProcessor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.Length;
@@ -36,7 +36,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
     INSTANCE;
 
     @Override
-    public Integer fromStream(Element e, InputStream is) throws IOException {
+    public Integer read(Element e, ReadableByteChannel channel) throws IOException {
 	// doubles and floats have fixed length
 	Type type = e.getType();
 	if (type == Type.DOUBLE)
@@ -58,7 +58,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 		    throw new IllegalArgumentException(
 			    "Preceding length field is null!");
 
-		byte[] preBytes = IoUtil.readBytes(lengthField / 8, is);
+		byte[] preBytes = IoUtil.readBytes(lengthField / 8, channel);
 		/*
 		 * conversion to int should be safe, since preceding length
 		 * field of more than 4 byte is not realistic (1 byte is enough)
@@ -80,7 +80,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
     }
 
     @Override
-    public int toStream(Integer object, Element e, OutputStream os)
+    public int write(Integer object, Element e, WritableByteChannel channel)
 	    throws IOException {
 	// doubles and floats have fixed length
 	Type type = e.getType();
@@ -110,7 +110,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 			object.longValue(), IntegerEncoding.UNSIGNED,
 			lengthField);
 
-		IoUtil.writeBytes(bytes, os);
+		IoUtil.writeBytes(bytes, channel);
 		length = object;
 	    }
 	} else {

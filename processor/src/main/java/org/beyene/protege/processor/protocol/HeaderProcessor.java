@@ -17,15 +17,15 @@
 package org.beyene.protege.processor.protocol;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.data.DataUnit;
 
 public interface HeaderProcessor {
     
-	public DataUnit fromStream(Protocol p, InputStream is) throws IOException;
+	public DataUnit read(Protocol p, ReadableByteChannel channel) throws IOException;
 	
-	public int toStream(DataUnit du, Protocol p, OutputStream os) throws IOException;
+	public int write(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException;
 }

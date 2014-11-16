@@ -19,8 +19,9 @@ package org.beyene.protege.processor.protocol;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.Type;
@@ -38,9 +39,9 @@ public class DefaultMessageProcessor implements MessageProcessor {
     }
 
     @Override
-    public DataUnit fromStream(Protocol p, InputStream is) throws IOException {
-	InputStream currentStream = is;
-	DataUnit dataUnit = headerProcessor.fromStream(p, currentStream);
+    public DataUnit read(Protocol p, ReadableByteChannel channel) throws IOException {
+	ReadableByteChannel currentChannel = channel;
+	DataUnit dataUnit = headerProcessor.read(p, currentChannel);
 	
 	int totalLength = ProtocolUtil.getTotalLength(dataUnit, p);
 	/*
@@ -48,18 +49,20 @@ public class DefaultMessageProcessor implements MessageProcessor {
 	 */
 	if (totalLength != -1) {
 	    int toRead = totalLength - ProtocolUtil.getHeaderBytes(p);
-	    byte[] bytes = IoUtil.readBytes(toRead, currentStream);
-	    currentStream = new ByteArrayInputStream(bytes);
+	    byte[] bytes = IoUtil.readBytes(toRead, currentChannel);
+	    currentChannel = Channels.newChannel(new ByteArrayInputStream(bytes));
 	}
 
-	dataUnit = unitProcessor.fromStream(dataUnit, p, currentStream);
+	dataUnit = unitProcessor.fromStream(dataUnit, p, currentChannel);
+	currentChannel = channel;
 	return dataUnit;
     }
 
     @Override
-    public int toStream(DataUnit du, Protocol p, OutputStream os) throws IOException {
+    public int write(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException {
 	ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	int bytesWritten = unitProcessor.toStream(du, p, baos);
+	WritableByteChannel bufferChannel = Channels.newChannel(baos);
+	int bytesWritten = unitProcessor.toStream(du, p, bufferChannel);
 	
 	if(ProtocolUtil.hasTotalLength(p)) {
 	    String totalLengthId = p.getHeader().getConfiguration().getTotalLengthId();
@@ -67,8 +70,8 @@ public class DefaultMessageProcessor implements MessageProcessor {
 	    du.addPrimitiveValue(totalLengthId, Type.INTEGER, Long.valueOf(headerLength + bytesWritten));
 	}
 	
-	bytesWritten += headerProcessor.toStream(du, p, os);
-	baos.writeTo(os);
+	bytesWritten += headerProcessor.write(du, p, channel);
+	IoUtil.writeBytes(baos.toByteArray(), channel);
 	return bytesWritten;
     }
 }

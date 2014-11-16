@@ -14,23 +14,21 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.example.test;
+package org.beyene.protege.example;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import org.beyene.protege.core.Unit;
+import org.beyene.protege.core.data.DataUnit;
 
-import org.beyene.protege.core.Protocol;
+public class SimpleMessageHandler implements MessageHandler {
 
-public class Main {
+    @Override
+    public void handleMessage(DataUnit message) {
+	Unit u = message.getUnit();
 
-    public static void main(String[] args) throws JAXBException {
-	Protocol p = Units.getProtocol();
+    }
 
-	JAXBContext context = JAXBContext.newInstance(Protocol.class);
-	Marshaller marshaller = context.createMarshaller();
-	marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-	marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-	marshaller.marshal(p, System.out);
+    @Override
+    public void notifyDisconnect() {
+	System.out.println("Connection lost");
     }
 }

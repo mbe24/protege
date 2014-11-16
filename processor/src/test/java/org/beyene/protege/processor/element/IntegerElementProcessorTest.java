@@ -19,6 +19,7 @@ package org.beyene.protege.processor.element;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,53 +38,53 @@ public class IntegerElementProcessorTest {
     private static final IntegerElementProcessor ep = IntegerElementProcessor.INSTANCE;
     
     @Test
-    public void testFromStream() throws Exception {
-	Map<IntegerEncoding, Long> results = new HashMap<>();
-	results.put(IntegerEncoding.TWOS_COMPLEMENT, -1L);
-	results.put(IntegerEncoding.UNSIGNED, 65535L);
-
-	for (Encoding<Long> encoding : Arrays.asList(
-		IntegerEncoding.TWOS_COMPLEMENT, IntegerEncoding.UNSIGNED)) {
-	    Element e = new Element();
-	    e.setType(Type.INTEGER);
-	    e.setClassification(encoding.getKey());
-	    Length l = new Length();
-	    l.setBit(16);
-	    e.setLength(l);
-
-	    // 65535 unsigned or -1 signed
-	    InputStream is = new ByteArrayInputStream(
-		    ByteUtil.toByteArray("FFFF"));
-
-	    Long result = ep.fromStream(e, is);
-	    Assert.assertEquals(results.get(encoding).longValue(),
-		    result.longValue());
-	}
-    }
+        public void testRead() throws Exception {
+    	Map<IntegerEncoding, Long> results = new HashMap<>();
+    	results.put(IntegerEncoding.TWOS_COMPLEMENT, -1L);
+    	results.put(IntegerEncoding.UNSIGNED, 65535L);
+    
+    	for (Encoding<Long> encoding : Arrays.asList(
+    		IntegerEncoding.TWOS_COMPLEMENT, IntegerEncoding.UNSIGNED)) {
+    	    Element e = new Element();
+    	    e.setType(Type.INTEGER);
+    	    e.setClassification(encoding.getKey());
+    	    Length l = new Length();
+    	    l.setBit(16);
+    	    e.setLength(l);
+    
+    	    // 65535 unsigned or -1 signed
+    	    InputStream is = new ByteArrayInputStream(
+    		    ByteUtil.toByteArray("FFFF"));
+    
+    	    Long result = ep.read(e, Channels.newChannel(is));
+    	    Assert.assertEquals(results.get(encoding).longValue(),
+    		    result.longValue());
+    	}
+        }
 
     @Test
-    public void testToStream() throws Exception {
-	Map<IntegerEncoding, Long> results = new HashMap<>();
-	results.put(IntegerEncoding.TWOS_COMPLEMENT, -1L);
-	results.put(IntegerEncoding.UNSIGNED, 65535L);
-
-	for (Encoding<Long> encoding : Arrays.asList(
-		IntegerEncoding.TWOS_COMPLEMENT, IntegerEncoding.UNSIGNED)) {
-	    Element e = new Element();
-	    e.setType(Type.INTEGER);
-	    e.setClassification(encoding.getKey());
-	    Length l = new Length();
-	    l.setBit(16);
-	    e.setLength(l);
-
-	    ByteArrayOutputStream os = new ByteArrayOutputStream();
-	    ep.toStream(results.get(encoding), e, os);
-	    
-	    // 65535 unsigned or -1 signed
-	    InputStream is = new ByteArrayInputStream(os.toByteArray());
-	    Long result = ep.fromStream(e, is);
-	    Assert.assertEquals(results.get(encoding).longValue(),
-		    result.longValue());
-	}
-    }
+        public void testWrite() throws Exception {
+    	Map<IntegerEncoding, Long> results = new HashMap<>();
+    	results.put(IntegerEncoding.TWOS_COMPLEMENT, -1L);
+    	results.put(IntegerEncoding.UNSIGNED, 65535L);
+    
+    	for (Encoding<Long> encoding : Arrays.asList(
+    		IntegerEncoding.TWOS_COMPLEMENT, IntegerEncoding.UNSIGNED)) {
+    	    Element e = new Element();
+    	    e.setType(Type.INTEGER);
+    	    e.setClassification(encoding.getKey());
+    	    Length l = new Length();
+    	    l.setBit(16);
+    	    e.setLength(l);
+    
+    	    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    	    ep.write(results.get(encoding), e, Channels.newChannel(os));
+    	    
+    	    // 65535 unsigned or -1 signed
+    	    InputStream is = new ByteArrayInputStream(os.toByteArray());
+    	    Long result = ep.read(e, Channels.newChannel(is));
+    	    Assert.assertEquals(results.get(encoding).longValue(),
+    		    result.longValue());
+    	}
+        }
 }

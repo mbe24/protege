@@ -18,8 +18,7 @@ package org.beyene.protege.processor;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ByteChannel;
 import java.nio.channels.Channel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
@@ -33,20 +32,18 @@ import org.beyene.protege.core.data.DataUnit;
 public class MessageChannel implements AutoCloseable, Closeable, Channel {
 
     private final MessageChannelWorker delegate;
-    private final InputStream is;
 
     private final ExecutorService executor;
     private final ConcurrentLinkedQueue<DataUnit> queue = new ConcurrentLinkedQueue<>();
 
     private CountDownLatch ready;
     private final AtomicBoolean hasException = new AtomicBoolean();
-    
+
     private boolean block;
     private boolean open = true;
 
-    private MessageChannel(Protocol p, InputStream is, OutputStream os) {
-	this.is = is;
-	this.delegate = new MessageChannelWorker(this, is, os, p);
+    private MessageChannel(Protocol p, ByteChannel channel) {
+	this.delegate = new MessageChannelWorker(this, channel, p);
 	this.executor = Executors.newFixedThreadPool(1);
 	executor.submit(delegate);
 
@@ -54,8 +51,8 @@ public class MessageChannel implements AutoCloseable, Closeable, Channel {
 	this.block = true;
     }
 
-    public static MessageChannel from(Protocol p, InputStream is, OutputStream os) {
-	return new MessageChannel(p, is, os);
+    public static MessageChannel from(Protocol p, ByteChannel channel) {
+	return new MessageChannel(p, channel);
     }
 
     public DataUnit read() throws IOException {
@@ -66,24 +63,16 @@ public class MessageChannel implements AutoCloseable, Closeable, Channel {
 		e.printStackTrace();
 	    }
 	}
-	
+
 	if (hasException.get())
 	    rethrowException();
 
 	this.ready = new CountDownLatch(1);
 	return queue.poll();
     }
-    
+
     public void write(DataUnit object) throws IOException {
 	delegate.write(object);
-    }
-
-    @Override
-    public void close() throws IOException {
-	open = false;
-	delegate.close();
-	is.close();
-	executor.shutdown();
     }
 
     public MessageChannel configureBlocking(boolean block) {
@@ -113,5 +102,12 @@ public class MessageChannel implements AutoCloseable, Closeable, Channel {
     @Override
     public boolean isOpen() {
 	return open;
+    }
+
+    @Override
+    public void close() throws IOException {
+	open = false;
+	delegate.close();
+	executor.shutdown();
     }
 }

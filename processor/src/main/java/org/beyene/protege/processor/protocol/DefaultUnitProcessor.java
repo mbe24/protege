@@ -17,8 +17,8 @@
 package org.beyene.protege.processor.protocol;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +49,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
     private final GenericElementProcessor ep = GenericElementProcessor.INSTANCE;
 
     @Override
-    public DataUnit fromStream(DataUnit du, Protocol p, InputStream is) throws IOException {
+    public DataUnit fromStream(DataUnit du, Protocol p, ReadableByteChannel channel) throws IOException {
 	List<Element> elements = new LinkedList<>(du.getUnit().getBody().getElements());
 
 	/*
@@ -86,7 +86,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 	    
 	    // primitive
 	    if (e.getType() != null) {
-		Object value = ep.fromStream(e, is);
+		Object value = ep.read(e, channel);
 		data.addPrimitiveValue(e.getId(), e.getType(), value);
 	    }
 	    // complex type
@@ -99,7 +99,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 		if (ElementUtil.hasPrecedingLengthField(e)) {
 		    int width = ElementUtil.getPrecedingLengthFieldWidth(e);
 		    AtomProcessor<Long> ap = AtomProcessorFactory.getProcessor(Primitive.INTEGER);
-		    occurrences = ap.interpret(IoUtil.readBytes(width / 8, is), IntegerEncoding.UNSIGNED).intValue();
+		    occurrences = ap.interpret(IoUtil.readBytes(width / 8, channel), IntegerEncoding.UNSIGNED).intValue();
 		} else if (ElementUtil.hasFixedLength(e))
 		    occurrences = ElementUtil.getFixedLength(e);
 
@@ -128,7 +128,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
     }
 
     @Override
-    public int toStream(DataUnit du, Protocol p, OutputStream os) throws IOException {
+    public int toStream(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException {
 	List<Element> elements = new LinkedList<>(du.getUnit().getBody().getElements());
 
 	/*
@@ -166,7 +166,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 	    // primitive
 	    if (e.getType() != null) {
 		Object value = data.getPrimitiveValue(e.getId(), Primitive.forType(e.getType()));
-		bytesWritten += ep.toStream(value, e, os);
+		bytesWritten += ep.write(value, e, channel);
 	    }
 	    // complex type
 	    else {
@@ -179,7 +179,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 		    int width = ElementUtil.getPrecedingLengthFieldWidth(e);
 		    AtomProcessor<Long> ap = AtomProcessorFactory.getProcessor(Primitive.INTEGER);
 		    byte[] bytes = ap.toBytes(Long.valueOf(occurrences), IntegerEncoding.UNSIGNED, width);
-		    bytesWritten += IoUtil.writeBytes(bytes, os);
+		    bytesWritten += IoUtil.writeBytes(bytes, channel);
 		} else if (ElementUtil.hasFixedLength(e)) {
 		    occurrences = ElementUtil.getFixedLength(e);
 		    // TODO error handling

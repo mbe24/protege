@@ -19,8 +19,8 @@ package org.beyene.protege.processor.element;
 import static org.beyene.protege.processor.atom.AtomProcessorFactory.getProcessor;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 import org.beyene.protege.core.Element;
 import org.beyene.protege.core.data.Primitive;
@@ -33,20 +33,20 @@ enum DoubleElementProcessor implements ElementProcessor<Double> {
     INSTANCE;
     
     @Override
-    public Double fromStream(Element e, InputStream is) throws IOException {
-	int length = LengthProcessor.INSTANCE.fromStream(e, is);
+    public Double read(Element e, ReadableByteChannel channel) throws IOException {
+	int length = LengthProcessor.INSTANCE.read(e, channel);
 	// if classification == null then set to default encoding
 	String classification = e.getClassification();
 	Encoding<Double> encoding = Classifications.get(classification, Primitive.DOUBLE);
-	return getProcessor(Primitive.DOUBLE).interpret(IoUtil.readBytes(length / 8, is), encoding);
+	return getProcessor(Primitive.DOUBLE).interpret(IoUtil.readBytes(length / 8, channel), encoding);
     }
 
     @Override
-    public int toStream(Double object, Element e, OutputStream os) throws IOException {
+    public int write(Double object, Element e, WritableByteChannel channel) throws IOException {
 	String classification = e.getClassification();
 	Encoding<Double> encoding = Classifications.get(classification, Primitive.DOUBLE);
-	int length = LengthProcessor.INSTANCE.toStream(-1, e, os);
+	int length = LengthProcessor.INSTANCE.write(-1, e, channel);
 	byte[] bytes = getProcessor(Primitive.DOUBLE).toBytes(object, encoding, length);
-	return IoUtil.writeBytes(bytes, length / 8, os);
+	return IoUtil.writeBytes(bytes, channel);
     }
 }

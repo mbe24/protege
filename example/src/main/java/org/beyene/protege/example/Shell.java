@@ -14,18 +14,13 @@
  * limitations under the License.
  * 
  */
-package org.beyene.protege.processor.protocol;
+package org.beyene.protege.example;
 
-import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+public final class Shell {
 
-import org.beyene.protege.core.Protocol;
-import org.beyene.protege.core.data.DataUnit;
+    public static void main(String[] args) {
+	// TODO Auto-generated method stub
 
-public interface MessageProcessor {
-    
-	public DataUnit read(Protocol p, ReadableByteChannel channel) throws IOException;
-	
-	public int write(DataUnit du, Protocol p, WritableByteChannel channel) throws IOException;
+    }
+
 }
