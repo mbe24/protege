@@ -28,8 +28,9 @@ public final class ElementUtil {
     
     public static int precedingLengthWritten(Element e) {
 	int length = 0;
-	if (e.getLength() != null && e.getLength().getBit() == null)
-	    length = e.getLength().getPrecedingLengthFieldSize() / 8;
+	if (e.getLength() != null && e.getLength().getQuantity() == null
+		&& getLength(e).getPrecedingLengthFieldSize() != null)
+	    length = e.getLength().getPrecedingLengthFieldSize();
 	return length;
     }
     
@@ -58,10 +59,10 @@ public final class ElementUtil {
     }
     
     public static boolean hasFixedLength(Element e) {
-	return hasLength(e) && getLength(e).getBit() != null;
+	return hasLength(e) && getLength(e).getQuantity() != null;
     }
     
     public static int getFixedLength(Element e) {
-	return getLength(e).getBit();
+	return getLength(e).getQuantity();
     }
 }

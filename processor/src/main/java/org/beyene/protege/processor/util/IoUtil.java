@@ -17,7 +17,6 @@
 package org.beyene.protege.processor.util;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -28,24 +27,12 @@ public final class IoUtil {
 	// private constructor to prevent instantiation
     }
 
-    public static byte[] readBytes(int n, InputStream is) throws IOException {
-	byte[] bytes = new byte[n];
-	for (int i = 0; i < n; i++) {
-	    int b = is.read();
-	    if (b == -1)
-		throw new IOException(
-			"Could not finish reading expected number of bytes!");
-	    bytes[i] = (byte) b;
-	}
-	return bytes;
-    }
-
     public static byte[] readBytes(int n, ReadableByteChannel channel)
 	    throws IOException {
 	ByteBuffer bb = ByteBuffer.allocate(n);
 	while (bb.remaining() > 0)
 	    if (channel.read(bb) == -1)
-		;// TODO handle end-of-stream
+		throw new IOException("Could not finish reading expected number of bytes!");
 	return bb.array();
 
     }

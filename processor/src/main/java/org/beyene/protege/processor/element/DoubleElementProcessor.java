@@ -38,7 +38,7 @@ enum DoubleElementProcessor implements ElementProcessor<Double> {
 	// if classification == null then set to default encoding
 	String classification = e.getClassification();
 	Encoding<Double> encoding = Classifications.get(classification, Primitive.DOUBLE);
-	return getProcessor(Primitive.DOUBLE).interpret(IoUtil.readBytes(length / 8, channel), encoding);
+	return getProcessor(Primitive.DOUBLE).interpret(IoUtil.readBytes(length, channel), encoding);
     }
 
     @Override

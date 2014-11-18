@@ -35,12 +35,12 @@ class StringProcessor implements AtomProcessor<String> {
     }
 
     @Override
-    public byte[] toBytes(String element, Encoding<String> encoding, int bits) {
+    public byte[] toBytes(String element, Encoding<String> encoding, int bytes) {
 	Charset charset = Charset.forName(encoding.getKey());
-	byte[] bytes = element.getBytes(charset);
+	byte[] raw = element.getBytes(charset);
 
-	assert interpret(bytes, encoding).equals(element) : "Encoded bytes are invalid!";
-	// TODO only return (bits / 8) bytes
-	return bytes;
+	assert interpret(raw, encoding).equals(element) : "Encoded bytes are invalid!";
+	// TODO only return specified bytes
+	return raw;
     }
 }

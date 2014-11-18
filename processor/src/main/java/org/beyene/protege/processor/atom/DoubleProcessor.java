@@ -48,7 +48,7 @@ class DoubleProcessor implements AtomProcessor<Double> {
     }
 
     @Override
-    public byte[] toBytes(Double element, Encoding<Double> encoding, int bits) {
+    public byte[] toBytes(Double element, Encoding<Double> encoding, int bytes) {
 	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
 	// bb.order(ByteOrder.LITTLE_ENDIAN);
 	bb.putLong(Double.doubleToLongBits(element));
@@ -57,10 +57,8 @@ class DoubleProcessor implements AtomProcessor<Double> {
 	    throw new IllegalArgumentException(
 		    "Only IEEE 754 double precision encoding supported for type double!");
 
-	int bytes = 8;
-
-	bb.position(bb.limit() - bytes);
-	byte[] encoded = new byte[bytes];
+	bb.position(bb.limit() - MAX_BYTES);
+	byte[] encoded = new byte[MAX_BYTES];
 	bb.get(encoded);
 
 	assert interpret(encoded, encoding).equals(element) : "Encoded bytes are invalid!";

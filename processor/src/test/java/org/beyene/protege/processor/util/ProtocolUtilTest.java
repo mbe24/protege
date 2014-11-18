@@ -49,7 +49,7 @@ public class ProtocolUtilTest {
 	Element version = new Element();
 	version.setType(Type.INTEGER);
 	Length versionLength = new Length();
-	versionLength.setBit(8);
+	versionLength.setQuantity(1);
 	version.setLength(versionLength);
 	version.setId("version");
 
@@ -76,7 +76,7 @@ public class ProtocolUtilTest {
 
 	// create malformed element
 	versionLength = new Length();
-	versionLength.setPrecedingLengthFieldSize(8);
+	versionLength.setPrecedingLengthFieldSize(1);
 	unitId = new Element();
 	unitId.setLength(versionLength);
 	unitId.setType(Type.BYTE);

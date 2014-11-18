@@ -47,7 +47,7 @@ public final class HelloProtocol {
 		Element version = new Element();
 		version.setType(Type.INTEGER);
 		Length versionLength = new Length();
-		versionLength.setBit(8);
+		versionLength.setQuantity(1);
 		version.setLength(versionLength);
 		version.setId("version");
 		version.setClassification(IntegerEncoding.UNSIGNED.getKey());
@@ -64,8 +64,7 @@ public final class HelloProtocol {
 		unitId.setId("unit-id");
 
 		ComplexType header = new ComplexType();
-		header.setElements(Arrays.asList(packetHeader, version, totalLength,
-				unitId));
+		header.setElements(Arrays.asList(packetHeader, version, totalLength, unitId));
 		Configuration config = new Configuration();
 		config.setTotalLengthId(totalLength.getId());
 		config.setVersionId(version.getId());
@@ -78,7 +77,7 @@ public final class HelloProtocol {
 
 		// create type 'person'
 		Length l = new Length();
-		l.setPrecedingLengthFieldSize(8);
+		l.setPrecedingLengthFieldSize(1);
 
 		Element firstName = new Element();
 		firstName.setId("first-name");
@@ -93,7 +92,7 @@ public final class HelloProtocol {
 		lastName.setClassification(StringEncoding.UTF_8.getKey());
 
 		Length genderLength = new Length();
-		genderLength.setBit(8);
+		genderLength.setQuantity(1);
 
 		Element gender = new Element();
 		gender.setId("gender");
@@ -135,7 +134,7 @@ public final class HelloProtocol {
 
 		// create body
 		Length m = new Length();
-		m.setPrecedingLengthFieldSize(8);
+		m.setPrecedingLengthFieldSize(1);
 
 		Element personList = new Element();
 		personList.setId("persons");

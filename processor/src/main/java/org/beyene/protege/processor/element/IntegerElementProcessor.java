@@ -39,7 +39,7 @@ enum IntegerElementProcessor implements ElementProcessor<Long> {
 	String classification = e.getClassification();
 	Encoding<Long> encoding = Classifications.get(classification, Primitive.INTEGER);
 	Primitive<Long> _integer = Primitive.INTEGER;
-	return getProcessor(_integer).interpret(IoUtil.readBytes(length / 8, channel), encoding);
+	return getProcessor(_integer).interpret(IoUtil.readBytes(length, channel), encoding);
     }
 
     @Override

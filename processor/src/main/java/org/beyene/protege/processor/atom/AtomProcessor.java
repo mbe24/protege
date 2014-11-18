@@ -39,8 +39,8 @@ public interface AtomProcessor<T> {
      * 
      * @param element
      * @param encoding
-     * @param bits if not needed by current implementation, parameter is ignored.
+     * @param bytes if not needed by current implementation, parameter is ignored.
      * @return
      */
-    public byte[] toBytes(T element, Encoding<T> encoding, int bits);
+    public byte[] toBytes(T element, Encoding<T> encoding, int bytes);
 }

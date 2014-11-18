@@ -22,22 +22,23 @@ public final class ByteTestUtil {
 	// private constructor to prevent instantiation
     }
 
-    // writes number of bits into length field
+    // writes number of bytes into length field
     public static byte[] toPrefixedByteArray(String hex, int bytesPrefix) {
 	String lengthPrefix = lengthPrefix(hex, bytesPrefix);
 	if (lengthPrefix.length() != (2 * bytesPrefix))
 	    throw new IllegalArgumentException(String.format("Preceding length field has width of %d bytes!", lengthPrefix.length() / 2));
 	return ByteUtil.toByteArray(lengthPrefix + hex);
     }
-    
-    // in bytes
+
+    // computes necessary width of length field
     public static int widthOfLengthField(String hex) {
-	int bits = 8 * hex.length() / 2;
+	int bits = hex.length() / 2;
 	return (int) Math.ceil(Integer.toBinaryString(bits).length() / 8d);
     }
-    
+
+    // creates length field with width 'bytePrefix'
     public static String lengthPrefix(String hex, int bytesPrefix) {
 	return String.format("%" + (bytesPrefix * 2) + "s",
-		Integer.toHexString(8 * hex.length() / 2)).replace(' ', '0');
+		Integer.toHexString(hex.length() / 2)).replace(' ', '0');
     }
 }

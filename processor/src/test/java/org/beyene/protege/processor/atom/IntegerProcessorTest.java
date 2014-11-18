@@ -32,126 +32,126 @@ public class IntegerProcessorTest {
 	@Test
 	public void testToBytesNegative() throws Exception {
 		long n = -64;
-		int bits;
+		int bytes;
 		String hex;
 
-		bits = 64;
-		byte[] b8 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 8;
+		byte[] b8 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b8);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 56;
-		byte[] b7 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 7;
+		byte[] b7 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b7);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 48;
-		byte[] b6 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 6;
+		byte[] b6 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b6);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 40;
-		byte[] b5 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 5;
+		byte[] b5 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b5);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 32;
-		byte[] b4 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 4;
+		byte[] b4 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b4);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 24;
-		byte[] b3 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 3;
+		byte[] b3 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b3);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 16;
-		byte[] b2 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 2;
+		byte[] b2 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b2);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 
-		bits = 8;
-		byte[] b1 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 1;
+		byte[] b1 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b1);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExNegative));
 	}
 
 	@Test
 	public void testToBytesPositive() throws Exception {
 		long n = 64;
-		int bits;
+		int bytes;
 		String hex;
 
-		bits = 64;
-		byte[] b8 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 8;
+		byte[] b8 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b8);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 56;
-		byte[] b7 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 7;
+		byte[] b7 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b7);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 48;
-		byte[] b6 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 6;
+		byte[] b6 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b6);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 40;
-		byte[] b5 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 5;
+		byte[] b5 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b5);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 32;
-		byte[] b4 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 4;
+		byte[] b4 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b4);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 24;
-		byte[] b3 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 3;
+		byte[] b3 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b3);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 16;
-		byte[] b2 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 2;
+		byte[] b2 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b2);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 
-		bits = 8;
-		byte[] b1 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bits);
+		bytes = 1;
+		byte[] b1 = ap.toBytes(n, IntegerEncoding.TWOS_COMPLEMENT, bytes);
 		hex = ByteUtil.toHexString(b1);
 		System.out.println(hex);
-		Assert.assertEquals(2 * bits / 8, hex.length());
+		Assert.assertEquals(2 * bytes, hex.length());
 		Assert.assertTrue(hex.matches(regExPositive));
 	}
 

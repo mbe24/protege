@@ -52,7 +52,7 @@ public class Units {
 		lastName.setLength(l);
 		
 		Length genderLength = new Length();
-		genderLength.setBit(8);
+		genderLength.setQuantity(8);
 		
 		Element gender = new Element();
 		gender.setId("gender");
@@ -94,7 +94,7 @@ public class Units {
 		Element version = new Element();
 		version.setType(Type.INTEGER);
 		Length versionLength = new Length();
-		versionLength.setBit(8);
+		versionLength.setQuantity(8);
 		version.setLength(versionLength);
 		version.setId("version");
 		
@@ -134,7 +134,7 @@ public class Units {
 		lastName.setLength(l);
 		
 		Length genderLength = new Length();
-		genderLength.setBit(8);
+		genderLength.setQuantity(8);
 		
 		Element gender = new Element();
 		gender.setId("gender");

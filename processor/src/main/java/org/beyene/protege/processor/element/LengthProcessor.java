@@ -40,25 +40,22 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 	// doubles and floats have fixed length
 	Type type = e.getType();
 	if (type == Type.DOUBLE)
-	    return Classifications.get(e.getClassification(), Primitive.DOUBLE)
-		    .getWidth();
+	    return Classifications.get(e.getClassification(), Primitive.DOUBLE).getWidth() / 8;
 	else if (type == Type.FLOAT)
-	    return Classifications.get(e.getClassification(), Primitive.FLOAT)
-		    .getWidth();
+	    return Classifications.get(e.getClassification(), Primitive.FLOAT).getWidth() / 8;
 
 	Length l = e.getLength();
 	int length = 0;
 	if (l != null) {
-	    Integer bits = l.getBit();
-	    if (bits != null) {
-		length = bits;
+	    Integer n = l.getQuantity();
+	    if (n != null) {
+		length = n;
 	    } else {
 		Integer lengthField = l.getPrecedingLengthFieldSize();
 		if (lengthField == null)
-		    throw new IllegalArgumentException(
-			    "Preceding length field is null!");
+		    throw new IllegalArgumentException("Preceding length field is null!");
 
-		byte[] preBytes = IoUtil.readBytes(lengthField / 8, channel);
+		byte[] preBytes = IoUtil.readBytes(lengthField, channel);
 		/*
 		 * conversion to int should be safe, since preceding length
 		 * field of more than 4 byte is not realistic (1 byte is enough)
@@ -74,7 +71,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 	    // only used for reading of expected plain bytes
 	    Value v = e.getValue();
 	    if (v != null)
-		length = 8 * v.getBytes().length;
+		length = v.getBytes().length;
 	}
 	return length;
     }
@@ -85,26 +82,22 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 	// doubles and floats have fixed length
 	Type type = e.getType();
 	if (type == Type.DOUBLE)
-	    return Classifications.get(e.getClassification(), Primitive.DOUBLE)
-		    .getWidth();
+	    return Classifications.get(e.getClassification(), Primitive.DOUBLE).getWidth() / 8;
 	else if (type == Type.FLOAT)
-	    return Classifications.get(e.getClassification(), Primitive.FLOAT)
-		    .getWidth();
+	    return Classifications.get(e.getClassification(), Primitive.FLOAT).getWidth() / 8;
 
 	Length l = e.getLength();
 	int length = 0;
 	if (l != null) {
-	    Integer bits = l.getBit();
-	    if (bits != null) {
-		length = bits;
+	    Integer n = l.getQuantity();
+	    if (n != null) {
+		length = n;
 	    } else {
 		Integer lengthField = l.getPrecedingLengthFieldSize();
 		if (lengthField == null)
-		    throw new IllegalArgumentException(
-			    "Preceding length field is null!");
+		    throw new IllegalArgumentException("Preceding length field is null!");
 		if (object == null)
-		    throw new IllegalArgumentException(
-			    "Preceding length value is null!");
+		    throw new IllegalArgumentException("Preceding length value is null!");
 
 		byte[] bytes = getProcessor(Primitive.INTEGER).toBytes(
 			object.longValue(), IntegerEncoding.UNSIGNED,
@@ -117,7 +110,7 @@ enum LengthProcessor implements ElementProcessor<Integer> {
 	    // only used for reading of expected plain bytes
 	    Value v = e.getValue();
 	    if (v != null)
-		length = 8 * v.getBytes().length;
+		length = v.getBytes().length;
 	}
 	return length;
     }

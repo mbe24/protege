@@ -124,13 +124,13 @@ public class DefaultUnitProcessorTest {
 	// person 1, max mustermann
 	
 	// first name length
-	sb.append("18");
+	sb.append("03");
 	
 	// first name
 	sb.append("4D6178");
 	
 	// last name length
-	sb.append("50");
+	sb.append("0A");
 	
 	// last name
 	sb.append("4D75737465726D616E6E");
@@ -143,13 +143,13 @@ public class DefaultUnitProcessorTest {
 	// person 2, john doe
 	
 	// first name length
-	sb.append("20");
+	sb.append("04");
 	
 	// first name
 	sb.append("4A6F686E");
 	
 	// last name length
-	sb.append("18");
+	sb.append("03");
 	
 	// last name
 	sb.append("446F65");

@@ -32,7 +32,7 @@ class ByteProcessor implements AtomProcessor<Byte[]> {
     }
 
     @Override
-    public byte[] toBytes(Byte[] element, Encoding<Byte[]> encoding, int bits) {
+    public byte[] toBytes(Byte[] element, Encoding<Byte[]> encoding, int bytes) {
 	return unbox(element);
     }
 

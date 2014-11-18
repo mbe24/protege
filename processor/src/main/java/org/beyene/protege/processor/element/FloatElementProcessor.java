@@ -38,7 +38,7 @@ enum FloatElementProcessor implements ElementProcessor<Float> {
 	// if classification == null then set to default encoding
 	String classification = e.getClassification();
 	Encoding<Float> encoding = Classifications.get(classification, Primitive.FLOAT);
-	return getProcessor(Primitive.FLOAT).interpret(IoUtil.readBytes(length / 8, channel), encoding);
+	return getProcessor(Primitive.FLOAT).interpret(IoUtil.readBytes(length, channel), encoding);
     }
 
     @Override

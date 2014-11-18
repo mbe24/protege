@@ -40,7 +40,7 @@ public final class ProtocolUtil {
 	    if (ElementUtil.hasValue(e))
 		bytes += ElementUtil.getValue(e).getHex().length() / 2;
 	    else if (ElementUtil.hasFixedLength(e))
-		bytes += (ElementUtil.getFixedLength(e) / 8);
+		bytes += (ElementUtil.getFixedLength(e));
 	    else
 		throw new IllegalStateException(String.format(
 			"Element '%s' in protocol header has no fixed length!",

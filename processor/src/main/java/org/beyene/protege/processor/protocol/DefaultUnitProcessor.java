@@ -99,7 +99,7 @@ public enum DefaultUnitProcessor implements UnitProcessor {
 		if (ElementUtil.hasPrecedingLengthField(e)) {
 		    int width = ElementUtil.getPrecedingLengthFieldWidth(e);
 		    AtomProcessor<Long> ap = AtomProcessorFactory.getProcessor(Primitive.INTEGER);
-		    occurrences = ap.interpret(IoUtil.readBytes(width / 8, channel), IntegerEncoding.UNSIGNED).intValue();
+		    occurrences = ap.interpret(IoUtil.readBytes(width, channel), IntegerEncoding.UNSIGNED).intValue();
 		} else if (ElementUtil.hasFixedLength(e))
 		    occurrences = ElementUtil.getFixedLength(e);
 

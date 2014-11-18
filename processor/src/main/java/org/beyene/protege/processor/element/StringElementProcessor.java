@@ -39,7 +39,7 @@ enum StringElementProcessor implements ElementProcessor<String> {
 	// if classification == null then set to default encoding
 	String classification = e.getClassification();
 	Encoding<String> encoding = Classifications.get(classification, Primitive.STRING);
-	return getProcessor(Primitive.STRING).interpret(IoUtil.readBytes(length / 8, channel), encoding);
+	return getProcessor(Primitive.STRING).interpret(IoUtil.readBytes(length, channel), encoding);
     }
 
     @Override
@@ -47,7 +47,7 @@ enum StringElementProcessor implements ElementProcessor<String> {
 	String classification = e.getClassification();
 	Encoding<String> encoding = Classifications.get(classification, Primitive.STRING);
 	byte[] bytes = getProcessor(Primitive.STRING).toBytes(object, encoding, -1);
-	LengthProcessor.INSTANCE.write(bytes.length * 8, e, channel);
+	LengthProcessor.INSTANCE.write(bytes.length, e, channel);
 	return IoUtil.writeBytes(bytes, channel) + ElementUtil.precedingLengthWritten(e);
     }
 }

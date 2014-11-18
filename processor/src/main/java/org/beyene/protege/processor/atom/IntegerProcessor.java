@@ -52,14 +52,10 @@ class IntegerProcessor implements AtomProcessor<Long> {
     }
 
     @Override
-    public byte[] toBytes(Long element, Encoding<Long> encoding, int bits) {
+    public byte[] toBytes(Long element, Encoding<Long> encoding, int bytes) {
 	ByteBuffer bb = ByteBuffer.allocate(MAX_BYTES);
 	// bb.order(ByteOrder.LITTLE_ENDIAN);
 	bb.putLong(element);
-
-	int bytes = bits / Byte.SIZE;
-	if (bits % Byte.SIZE != 0)
-	    bytes++;
 
 	bb.position(bb.limit() - bytes);
 	byte[] encoded = new byte[bytes];

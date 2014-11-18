@@ -29,7 +29,6 @@ public enum GenericElementProcessor implements ElementProcessor<Object> {
     @Override
     public Object read(Element e, ReadableByteChannel channel) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
-
 	// if number of types does not increase, this default case can never be
 	// reached.
 	if (ep == null)
@@ -41,7 +40,6 @@ public enum GenericElementProcessor implements ElementProcessor<Object> {
     @Override
     public int write(Object object, Element e, WritableByteChannel channel) throws IOException {
 	ElementProcessor<Object> ep = ElementProcessorFactory.getProcessor(e.getType());
-
 	// if number of types does not increase, this default case can never be
 	// reached.
 	if (ep == null)

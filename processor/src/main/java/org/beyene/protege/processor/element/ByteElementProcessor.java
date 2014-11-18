@@ -37,7 +37,7 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
     @Override
     public Byte[] read(Element e, ReadableByteChannel channel) throws IOException {
 	int length = LengthProcessor.INSTANCE.read(e, channel);
-	byte[] bytes = IoUtil.readBytes(length / 8, channel);
+	byte[] bytes = IoUtil.readBytes(length, channel);
 
 	if (ElementUtil.hasValue(e)) {
 	    Value value = ElementUtil.getValue(e);
@@ -50,14 +50,14 @@ enum ByteElementProcessor implements ElementProcessor<Byte[]> {
 
     @Override
     public int write(Byte[] object, Element e, WritableByteChannel channel) throws IOException {
-	int l = (object == null) ? 0 : object.length * 8;
+	int l = (object == null) ? 0 : object.length;
 	int length = LengthProcessor.INSTANCE.write(l, e, channel);
 	byte[] bytes;
 	if (ElementUtil.hasValue(e)) {
 	    Value value = ElementUtil.getValue(e);
 	    byte[] fixed = value.getBytes();
 	    if (object != null) {
-		bytes = getProcessor(Primitive.BYTES).toBytes(object, null, length);
+		bytes = getProcessor(Primitive.BYTES).toBytes(object, null, -1);
 		if (!Arrays.equals(fixed, bytes))
 		    throw new DataMismatchException(fixed, bytes);
 	    }

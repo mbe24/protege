@@ -20,13 +20,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(name = "length", propOrder = { "bit" })
+@XmlType(name = "length", propOrder = { "quantity" })
 public class Length {
 
 	private Integer precedingLengthField;
 	private Integer paddingLeft;
 	private Integer paddingRight;
-	private Integer bit;
+	private Integer quantity;
 
 	@XmlAttribute(name = "preceding-length-field")
 	public Integer getPrecedingLengthFieldSize() {
@@ -55,12 +55,12 @@ public class Length {
 		this.paddingRight = paddingRight;
 	}
 
-	@XmlElement(name = "bit")
-	public Integer getBit() {
-		return bit;
+	@XmlElement(name = "quantity")
+	public Integer getQuantity() {
+		return quantity;
 	}
 
-	public void setBit(Integer bit) {
-		this.bit = bit;
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
 	}
 }

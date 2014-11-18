@@ -26,7 +26,7 @@ public final class AtomProcessorFactory {
 
     private static Map<Primitive<?>, AtomProcessor<?>> processors = new HashMap<Primitive<?>, AtomProcessor<?>>();
     static {
-	for (AtomProcessor<?> p : Arrays.asList(new BooleanProcessor(),
+	for (AtomProcessor<?> p : Arrays.asList(
 		new ByteProcessor(), new DoubleProcessor(),
 		new FloatProcessor(), new IntegerProcessor(),
 		new StringProcessor())) {
