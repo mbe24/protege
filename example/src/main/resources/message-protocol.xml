@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<protocol name="hello">
+	<complex-types>
+		<type name="metadata">
+			<elements>
+				<element id="user" type="string" classification="utf-8">
+					<length preceding-length-field="1" />
+				</element>
+				<element id="date" classification="date">
+					<length>
+						<quantity>1</quantity>
+					</length>
+				</element>
+			</elements>
+		</type>
+		<type name="date">
+			<elements>
+				<element id="java-object" type="byte">
+					<length preceding-length-field="2" />
+				</element>
+			</elements>
+		</type>
+	</complex-types>
+	<header>
+		<configuration>
+			<version-id>version</version-id>
+			<unit-id>unit</unit-id>
+		</configuration>
+		<elements>
+			<element id="header-mark" type="byte">
+				<value hex="0420" />
+			</element>
+			<element id="version" type="integer" classification="unsigned">
+				<length>
+					<quantity>1</quantity>
+				</length>
+			</element>
+			<element id="unit" type="byte">
+				<length>
+					<quantity>1</quantity>
+				</length>
+			</element>
+		</elements>
+	</header>
+	<units>
+		<unit name="message">
+			<unique-key-value>
+				<value hex="00" />
+			</unique-key-value>
+			<body>
+				<elements>
+					<element id="metadata" classification="metadata">
+						<length>
+							<quantity>1</quantity>
+						</length>
+					</element>
+					<element id="message" type="string" classification="utf-8">
+						<length preceding-length-field="2" />
+					</element>
+				</elements>
+			</body>
+		</unit>
+		<unit name="file">
+			<unique-key-value>
+				<value hex="01" />
+			</unique-key-value>
+			<body>
+				<elements>
+					<element id="metadata" classification="metadata">
+						<length>
+							<quantity>1</quantity>
+						</length>
+					</element>
+					<element id="raw" type="byte">
+						<length preceding-length-field="5" />
+					</element>
+				</elements>
+			</body>
+		</unit>
+	</units>
+</protocol>

@@ -16,19 +16,23 @@
  */
 package org.beyene.protege.example;
 
-import org.beyene.protege.core.Unit;
-import org.beyene.protege.core.data.DataUnit;
+import java.util.Date;
 
-public class SimpleMessageHandler implements MessageHandler {
+public final class MetaData {
 
-    @Override
-    public void handleMessage(DataUnit message) {
-	Unit u = message.getUnit();
+    private final Date date;
+    private final String user;
 
+    public MetaData(Date date, String user) {
+	this.date = date;
+	this.user = user;
     }
 
-    @Override
-    public void notifyDisconnect() {
-	System.out.println("Connection lost");
+    public Date getDate() {
+	return date;
+    }
+
+    public String getUser() {
+	return user;
     }
 }
