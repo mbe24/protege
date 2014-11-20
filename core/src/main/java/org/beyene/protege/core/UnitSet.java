@@ -16,6 +16,8 @@
  */
 package org.beyene.protege.core;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -23,36 +25,46 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(name = "units", propOrder = { "units" })
-public class UnitSet {
+public class UnitSet implements Iterable<Unit> {
 
-	private String uniqueKeyId;
-	private String totalLengthId;
-	private List<Unit> units;
+    private String uniqueKeyId;
+    private String totalLengthId;
+    private List<Unit> units;
 
-	@XmlAttribute(name = "unique-key-id")
-	public String getUniqueKeyId() {
-		return uniqueKeyId;
-	}
+    @XmlAttribute(name = "unique-key-id")
+    public String getUniqueKeyId() {
+	return uniqueKeyId;
+    }
 
-	public void setUniqueKeyId(String uniqueKeyId) {
-		this.uniqueKeyId = uniqueKeyId;
-	}
+    public void setUniqueKeyId(String uniqueKeyId) {
+	this.uniqueKeyId = uniqueKeyId;
+    }
 
-	@XmlAttribute(name = "total-length-id")
-	public String getTotalLengthId() {
-		return totalLengthId;
-	}
+    @XmlAttribute(name = "total-length-id")
+    public String getTotalLengthId() {
+	return totalLengthId;
+    }
 
-	public void setTotalLengthId(String totalLengthId) {
-		this.totalLengthId = totalLengthId;
-	}
+    public void setTotalLengthId(String totalLengthId) {
+	this.totalLengthId = totalLengthId;
+    }
 
-	@XmlElement(name = "unit")
-	public List<Unit> getUnits() {
-		return units;
-	}
+    @XmlElement(name = "unit")
+    public List<Unit> getUnits() {
+	return units;
+    }
 
-	public void setUnits(List<Unit> units) {
-		this.units = units;
-	}
+    public void setUnits(List<Unit> units) {
+	this.units = units;
+    }
+
+    @Override
+    public Iterator<Unit> iterator() {
+	Iterator<Unit> it;
+	if (units.isEmpty())
+	    it = Collections.emptyIterator();
+	else
+	    it = units.iterator();
+	return it;
+    }
 }

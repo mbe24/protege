@@ -16,190 +16,111 @@
  */
 package org.beyene.protege.example;
 
-import java.util.Arrays;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.beyene.protege.core.ComplexType;
-import org.beyene.protege.core.Configuration;
-import org.beyene.protege.core.Element;
-import org.beyene.protege.core.Length;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 import org.beyene.protege.core.Protocol;
 import org.beyene.protege.core.Type;
 import org.beyene.protege.core.Unit;
-import org.beyene.protege.core.UnitSet;
-import org.beyene.protege.core.Value;
-import org.beyene.protege.core.encoding.DoubleEncoding;
-import org.beyene.protege.core.header.UniqueKeyValue;
+import org.beyene.protege.core.data.Composition;
+import org.beyene.protege.core.data.DataUnit;
+import org.beyene.protege.core.data.Primitive;
+import org.beyene.protege.processor.util.ByteUtil;
 
 public class Units {
 
-	private Units() {
-		// private constructor to prevent instantiation
+    private Units() {
+	// private constructor to prevent instantiation
+    }
+
+    private static final Protocol p;
+
+    static {
+	Source source = new StreamSource(
+		Units.class.getResourceAsStream("/message-protocol.xml"));
+	Protocol tmp = null;
+	try {
+	    tmp = readXml(source, Protocol.class);
+	} catch (JAXBException e) {
+	    System.err.println("Error while reading protocol from xml: "
+		    + e.getMessage());
+	    System.exit(1);
 	}
+	p = tmp;
+    }
 
-	public static Unit getExample() {
-		// create type 'person'
-		Length l = new Length();
-		l.setPrecedingLengthFieldSize(4);
+    private static final Map<String, Unit> units;
+    static {
+	Map<String, Unit> tmp = new HashMap<>();
+	for (Unit unit : p.getUnits())
+	    tmp.put(unit.getName(), unit);
+	units = Collections.unmodifiableMap(tmp);
+    }
 
-		Element firstName = new Element();
-		firstName.setId("first-name");
-		firstName.setType(Type.STRING);
-		firstName.setLength(l);
+    public static Protocol getProtocol() {
+	return p;
+    }
 
-		Element lastName = new Element();
-		lastName.setId("last-name");
-		lastName.setType(Type.STRING);
-		lastName.setLength(l);
-		
-		Length genderLength = new Length();
-		genderLength.setQuantity(8);
-		
-		Element gender = new Element();
-		gender.setId("gender");
-		gender.setType(Type.STRING);
-		gender.setLength(genderLength);		
+    public static MetaData extractMetaData(DataUnit du) throws IOException, ClassNotFoundException {
+	Composition md = du.getComplexCollection("metadata").get(0);
+	String user = md.getPrimitiveValue("user", Primitive.STRING);
+	
+	Composition c = md.getComplexCollection("date").get(0);
+	byte[] bytes = ByteUtil.unbox(c.getPrimitiveValue("java-object", Primitive.BYTES));
+	ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
+	Date date = Date.class.cast(ois.readObject());
+	
+	return new MetaData(date, user);
+    }
+    
+    public static DataUnit getEmptyMessageFor(String unit, String user) throws IOException {
+	Unit u = units.get(unit);
+	if (u == null)
+	    throw new IllegalArgumentException(String.format("There is no unit by name: %s.", unit));
+	DataUnit message = new DataUnit();
+	message.setUnit(u);
+	message.addPrimitiveValue("header-mark", Type.BYTE, ByteUtil.box(ByteUtil.toByteArray("0420")));
+	message.addPrimitiveValue("version", Type.INTEGER, Long.valueOf(1));
+	message.addPrimitiveValue("unit", Type.BYTE, ByteUtil.box(u.getKeyValue().getValue().getBytes()));
+	
+	Composition c = new Composition();
+	c.setId("metadata");
+	c.addPrimitiveValue("user", Type.STRING, user);
+	
+	Date current = Calendar.getInstance().getTime();
+	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	ObjectOutputStream oos = new ObjectOutputStream(baos);
+	oos.writeObject(current);
+	
+	Composition date = new Composition();
+	date.setId("date");
+	date.addPrimitiveValue("java-object", Type.BYTE, ByteUtil.box(baos.toByteArray()));
+	c.addComplexObject("date", date);
+	
+	message.addComplexObject("metadata", c);
+	return message;
+    }
 
-		ComplexType personType = new ComplexType();
-		personType.setElements(Arrays.asList(firstName, lastName, gender));
-		personType.setName("person");
-
-		Unit unit = new Unit();
-		unit.setName("get-group");
-		unit.setComplexTypes(Arrays.asList(personType));
-
-		// create body
-		Length m = new Length();
-		m.setPrecedingLengthFieldSize(8);
-
-		Element personList = new Element();
-		personList.setClassification("person");
-		personList.setLength(m);
-
-		ComplexType body = new ComplexType();
-		body.setElements(Arrays.asList(personList));
-		unit.setBody(body);
-
-		return unit;
-	}
-
-	public static Protocol getProtocol() {
-		// create header
-		Value value = new Value();
-		value.setHex("DEADBEEF");
-
-		Element packetHeader = new Element();
-		packetHeader.setType(Type.BYTE);
-		packetHeader.setValue(value);
-
-		Element version = new Element();
-		version.setType(Type.INTEGER);
-		Length versionLength = new Length();
-		versionLength.setQuantity(8);
-		version.setLength(versionLength);
-		version.setId("version");
-		
-		Element totalLength = new Element();
-		totalLength.setType(Type.INTEGER);
-		totalLength.setLength(versionLength);
-		totalLength.setId("total-length");
-		
-		Element unitId = new Element();
-		unitId.setLength(versionLength);
-		unitId.setType(Type.BYTE);
-		unitId.setId("unit-id");
-		
-		ComplexType header = new ComplexType();
-		header.setElements(Arrays.asList(packetHeader, version, totalLength, unitId));
-		Configuration c = new Configuration();
-		c.setTotalLengthId(totalLength.getId());
-		c.setVersionId(version.getId());
-		header.setConfiguration(c);
-		
-		Protocol p = new Protocol();
-		p.setName("hello");
-		p.setHeader(header);
-		
-		// create type 'person'
-		Length l = new Length();
-		l.setPrecedingLengthFieldSize(8);
-
-		Element firstName = new Element();
-		firstName.setId("first-name");
-		firstName.setType(Type.STRING);
-		firstName.setLength(l);
-
-		Element lastName = new Element();
-		lastName.setId("last-name");
-		lastName.setType(Type.STRING);
-		lastName.setLength(l);
-		
-		Length genderLength = new Length();
-		genderLength.setQuantity(8);
-		
-		Element gender = new Element();
-		gender.setId("gender");
-		gender.setType(Type.STRING);
-		gender.setLength(genderLength);		
-
-		ComplexType personType = new ComplexType();
-		personType.setElements(Arrays.asList(firstName, lastName, gender));
-		personType.setName("person");
-
-		// create unit request
-		
-		Unit request = new Unit();
-		request.setName("hello-request");
-		UniqueKeyValue ukv1 = new UniqueKeyValue();
-		Value v1 = new Value();
-		v1.setHex("00");
-		ukv1.setValue(v1);
-		request.setKeyValue(ukv1);
-		
-		ComplexType requestBody = new ComplexType();
-		Element requestElement = new Element();
-		requestElement.setClassification(personType.getName());
-		Length requestLength = new Length();
-		requestElement.setLength(requestLength);
-		requestBody.setElements(Arrays.asList(requestElement));
-		request.setBody(requestBody);
-		
-		// create unit response
-		
-		Unit response = new Unit();
-		response.setName("hello-response");
-		UniqueKeyValue ukv2 = new UniqueKeyValue();
-		Value v2 = new Value();
-		v2.setHex("01");
-		ukv2.setValue(v2);
-		response.setKeyValue(ukv2);
-
-		// create body
-		Length m = new Length();
-		m.setPrecedingLengthFieldSize(8);
-
-		Element personList = new Element();
-		personList.setClassification(personType.getName());
-		personList.setLength(m);
-
-		Element averageAge = new Element();
-		averageAge.setType(Type.DOUBLE);
-		averageAge.setClassification(DoubleEncoding.IEEE_754_DOUBLE.getKey());
-		Length age = new Length();
-		averageAge.setLength(age);
-		averageAge.setId("average-age");
-		
-		ComplexType body = new ComplexType();
-		body.setElements(Arrays.asList(personList, averageAge));
-		response.setBody(body);
-
-		p.setComplexTypes(Arrays.asList(personType));
-		
-		UnitSet units = new UnitSet();
-		units.setUnits(Arrays.asList(request, response));
-		units.setUniqueKeyId(unitId.getId());
-		units.setTotalLengthId(totalLength.getId());
-		
-		p.setUnits(units);
-		return p;
-	}
+    private static <T> T readXml(Source source, Class<T> declaredType)
+	    throws JAXBException {
+	JAXBContext context = JAXBContext.newInstance(Protocol.class);
+	Unmarshaller unmarshaller = context.createUnmarshaller();
+	JAXBElement<T> result = unmarshaller.unmarshal(source, declaredType);
+	return result.getValue();
+    }
 }

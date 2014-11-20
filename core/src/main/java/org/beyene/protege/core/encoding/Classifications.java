@@ -35,22 +35,22 @@ public final class Classifications {
 		map.put(Primitive.DOUBLE, new HashMap<String, Encoding<?>>());
 
 		for (IntegerEncoding enc : IntegerEncoding.values())
-			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
+			map.get(enc.getPrimitive()).put(enc.getKey().toUpperCase(), enc);
 
 		for (StringEncoding enc : StringEncoding.values())
-			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
+			map.get(enc.getPrimitive()).put(enc.getKey().toUpperCase(), enc);
 
 		for (FloatEncoding enc : FloatEncoding.values())
-			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
+			map.get(enc.getPrimitive()).put(enc.getKey().toUpperCase(), enc);
 
 		for (DoubleEncoding enc : DoubleEncoding.values())
-			map.get(enc.getPrimitive()).put(enc.getKey(), enc);
+			map.get(enc.getPrimitive()).put(enc.getKey().toUpperCase(), enc);
 	}
 
 	public static <T> Encoding<T> get(String key, Primitive<T> type) {
 		Map<String, Encoding<?>> inner = map.get(type);
 		@SuppressWarnings("unchecked")
-		Encoding<T> enc = (Encoding<T>) inner.get(key);
+		Encoding<T> enc = (Encoding<T>) inner.get(key.toUpperCase());
 
 		if (enc == null)
 			throw new IllegalArgumentException(String.format(
